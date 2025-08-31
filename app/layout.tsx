@@ -1,100 +1,106 @@
-/**
- * Root layout and SEO metadata for the application. Sets up global fonts/styles and the toaster.
- */
-import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Inter } from "next/font/google"
 import "./globals.css"
-import { Toaster } from "@/components/ui/toaster"
 
-const geistSans = Geist({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-geist-sans",
-})
+const inter = Inter({ subsets: ["latin"] })
 
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-geist-mono",
-})
-
+/**
+ * Root layout with SEO metadata and structured data for homepage
+ * Provides global font and CSS configuration
+ */
 export const metadata: Metadata = {
-  title: "Discord Timestamp Generator - Free Tool for Discord Time Formatting",
-  description:
-    "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones. 100% free tool.",
-  keywords:
-    "Discord timestamp generator, Discord timestamps, snowflake decoder, Discord time format, Discord timestamp tool, Discord timestamp UTC",
-  authors: [{ name: "Discord Timestamp Generator" }],
-  creator: "Discord Timestamp Generator",
-  publisher: "Discord Timestamp Generator",
+  title: "Smart Generators – Free Online Tools (Discord Timestamps, WhatsApp Links, and More)",
+  description: "Smart Generators is a hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
+  keywords: [
+    "free online tools",
+    "discord timestamp generator", 
+    "whatsapp link generator",
+    "privacy-first tools",
+    "no signup tools",
+    "online generators",
+    "timestamp converter",
+    "chat link creator"
+  ],
+  authors: [{ name: "Smart Generators" }],
+  creator: "Smart Generators",
+  publisher: "Smart Generators",
   robots: "index, follow",
   openGraph: {
-    title: "Discord Timestamp Generator - Free Tool for Discord Time Formatting",
-    description:
-      "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones. 100% free tool.",
     type: "website",
     locale: "en_US",
     url: "https://smartgenerators.dev",
+    title: "Smart Generators – Free Online Tools",
+    description: "Hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
     siteName: "Smart Generators",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Discord Timestamp Generator - Free Tool for Discord Time Formatting",
-    description:
-      "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones. 100% free tool.",
+    title: "Smart Generators – Free Online Tools",
+    description: "Hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
   },
   alternates: {
-    canonical: "/",
-  },
-    generator: 'v0.app'
+    canonical: "https://smartgenerators.dev",
+  }
 }
 
-/** Root layout component that wraps all pages with HTML/body and global providers. */
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Discord Timestamp Generator",
-    "description": "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones.",
-    "url": "https://smartgenerators.dev",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "featureList": [
-      "Natural language time input parsing",
-      "Discord timestamp generation",
-      "Snowflake ID decoding",
-      "Multiple timestamp formats",
-      "Real-time preview",
-      "Timezone support"
-    ],
-    "creator": {
-      "@type": "Organization",
-      "name": "Smart Generators"
-    }
-  }
-
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en">
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Smart Generators",
+              description: "Hub of free, privacy-first online tools for everyday problems",
+              url: "https://smartgenerators.dev",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: "https://smartgenerators.dev/?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              },
+              mainEntity: [
+                {
+                  "@type": "SoftwareApplication",
+                  name: "Discord Timestamp Generator",
+                  description: "Generate Discord timestamp codes, preview times in UTC/local, decode Snowflake IDs",
+                  url: "https://smartgenerators.dev/discord-timestamp",
+                  applicationCategory: "UtilitiesApplication",
+                  operatingSystem: "Any",
+                  offers: {
+                    "@type": "Offer",
+                    price: "0",
+                    priceCurrency: "USD"
+                  }
+                },
+                {
+                  "@type": "SoftwareApplication", 
+                  name: "Chat Link Generator",
+                  description: "Create WhatsApp, Telegram, Messenger & Discord deep links with optional QR codes",
+                  url: "https://smartgenerators.dev/chat-link-generator",
+                  applicationCategory: "UtilitiesApplication",
+                  operatingSystem: "Any",
+                  offers: {
+                    "@type": "Offer",
+                    price: "0",
+                    priceCurrency: "USD"
+                  }
+                }
+              ]
+            })
+          }}
         />
       </head>
-      <body>
-        {children}
-        <Toaster />
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
