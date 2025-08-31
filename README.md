@@ -12,7 +12,7 @@
 Generate direct messaging links for popular platforms:
 - **WhatsApp** - `wa.me` links with pre-filled messages
 - **Telegram** - Deep links and bot integration
-- **Facebook Messenger** - `m.me` links 
+- **Facebook Messenger** - `m.me` links
 - **Discord** - Server and user invites
 
 **Features:**

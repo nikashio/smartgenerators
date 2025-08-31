@@ -99,6 +99,7 @@ export default function RootLayout({
             })
           }}
         />
+        <script defer data-domain="smartgenerators.dev" src="https://plausible.io/js/script.js"></script>
       </head>
       <body className={inter.className}>{children}</body>
     </html>
