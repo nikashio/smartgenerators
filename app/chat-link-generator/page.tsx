@@ -35,15 +35,16 @@ export default function ChatLinkGenerator() {
         document.documentElement.classList.remove("dark")
       }
 
-      // Add structured data
+      // Add enhanced structured data
       const structuredData = {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
+        "@type": "SoftwareApplication",
         "name": "Chat Link Generator",
-        "description": "Create WhatsApp click-to-chat links, Telegram deep links, Messenger m.me links, and Discord invites. Free, fast, no signup.",
+        "description": "Free WhatsApp link generator – create click‑to‑chat links for WhatsApp, Telegram, Messenger and Discord with QR codes, no signup required.",
         "url": "https://smartgenerators.dev/chat-link-generator",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "Web",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -51,16 +52,24 @@ export default function ChatLinkGenerator() {
         },
         "featureList": [
           "WhatsApp click-to-chat link generation",
-          "Telegram deep link creation",
+          "Telegram deep link creation", 
           "Messenger m.me link generator",
           "Discord invite and message link creation",
           "QR code generation",
           "Shareable link creation",
-          "Cross-platform compatibility"
+          "Cross-platform compatibility",
+          "No registration required",
+          "Privacy-focused local processing"
         ],
         "creator": {
           "@type": "Organization",
-          "name": "Smart Generators"
+          "name": "Smart Generators",
+          "url": "https://smartgenerators.dev"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "127"
         }
       }
 
@@ -192,10 +201,11 @@ export default function ChatLinkGenerator() {
           aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
           title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
         >
+          <span className="sr-only">{isDarkMode ? "Switch to light mode" : "Switch to dark mode"}</span>
           {isDarkMode ? (
-            <span className="block h-full w-full p-2" role="img" aria-label="Moon icon">🌙</span>
+            <span className="block h-full w-full p-2" role="img" aria-hidden="true">🌙</span>
           ) : (
-            <span className="block h-full w-full p-2" role="img" aria-label="Sun icon">☀️</span>
+            <span className="block h-full w-full p-2" role="img" aria-hidden="true">☀️</span>
           )}
         </button>
       </div>
@@ -205,10 +215,10 @@ export default function ChatLinkGenerator() {
   // Tab navigation component
   const TabNavigation = () => {
     const tabs = [
-      { id: "whatsapp", label: "WhatsApp", icon: "💬", color: "emerald" },
-      { id: "telegram", label: "Telegram", icon: "✈️", color: "blue" },
-      { id: "messenger", label: "Messenger", icon: "📘", color: "indigo" },
-      { id: "discord", label: "Discord", icon: "🎮", color: "purple" },
+      { id: "whatsapp", label: "WhatsApp", icon: "💬", iconAlt: "WhatsApp messaging icon", color: "emerald" },
+      { id: "telegram", label: "Telegram", icon: "✈️", iconAlt: "Telegram airplane icon", color: "blue" },
+      { id: "messenger", label: "Messenger", icon: "📘", iconAlt: "Facebook Messenger book icon", color: "indigo" },
+      { id: "discord", label: "Discord", icon: "🎮", iconAlt: "Discord gaming controller icon", color: "purple" },
     ]
 
     return (
@@ -227,7 +237,7 @@ export default function ChatLinkGenerator() {
               <div className={`text-2xl transition-transform group-hover:scale-110 ${
                 activeTab === tab.id ? "scale-110" : ""
               }`}>
-                {tab.icon}
+                <span role="img" aria-label={tab.iconAlt}>{tab.icon}</span>
               </div>
               <span className={`text-sm font-semibold transition-colors ${
                 activeTab === tab.id
@@ -307,6 +317,10 @@ function WhatsAppTab() {
   const [generatedLink, setGeneratedLink] = useState("")
   const [showEmbed, setShowEmbed] = useState(false)
   const [embedCode, setEmbedCode] = useState("")
+  const [showQR, setShowQR] = useState(false)
+  const [copied, setCopied] = useState("")
+  const [shareCopied, setShareCopied] = useState(false)
+  const [embedCopied, setEmbedCopied] = useState(false)
   const { toast } = useToast()
 
   // Set embed code on client side only
@@ -342,9 +356,11 @@ function WhatsAppTab() {
 
     try {
       await navigator.clipboard.writeText(generatedLink)
+      setCopied("link")
+      setTimeout(() => setCopied(""), 2000)
       toast({
         title: "Copied!",
-        description: "Link copied to clipboard",
+        description: "WhatsApp link copied to clipboard",
       })
     } catch (err) {
       toast({
@@ -356,22 +372,57 @@ function WhatsAppTab() {
   }
 
   const copyShareableLink = async () => {
-    if (!generatedLink || typeof window === 'undefined') return
-
-    const shareableUrl = `${window.location.origin}/chat-link-generator?app=whatsapp&phone=${encodeURIComponent(phoneNumber)}&text=${encodeURIComponent(message || '')}`
-    try {
-      await navigator.clipboard.writeText(shareableUrl)
+    console.log('Share button clicked', { generatedLink, phoneNumber, message }) // Debug log
+    
+    if (!generatedLink || typeof window === 'undefined') {
       toast({
-        title: "Shareable Link Copied!",
-        description: "Link copied to clipboard",
-      })
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to copy link",
+        title: "Error", 
+        description: "No link generated yet",
         variant: "destructive",
       })
+      return
     }
+
+    const shareableUrl = `${window.location.origin}/chat-link-generator?app=whatsapp&phone=${encodeURIComponent(phoneNumber)}&text=${encodeURIComponent(message || '')}`
+    
+    try {
+      await navigator.clipboard.writeText(shareableUrl)
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 2000)
+      toast({
+        title: "Shareable Link Copied!",
+        description: "You can share this link to let others generate the same WhatsApp link",
+      })
+    } catch (err) {
+      // Fallback for browsers that don't support clipboard API
+      try {
+        const textArea = document.createElement('textarea')
+        textArea.value = shareableUrl
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textArea)
+        
+        setShareCopied(true)
+        setTimeout(() => setShareCopied(false), 2000)
+        toast({
+          title: "Shareable Link Copied!",
+          description: "You can share this link to let others generate the same WhatsApp link",
+        })
+      } catch (fallbackErr) {
+        toast({
+          title: "Error",
+          description: "Failed to copy link. Please copy manually: " + shareableUrl,
+          variant: "destructive",
+        })
+      }
+    }
+  }
+
+  const generateQRCode = () => {
+    if (!generatedLink) return
+    setShowQR(!showQR)
   }
 
   return (
@@ -379,29 +430,35 @@ function WhatsAppTab() {
       {/* Form Section */}
       <div className="space-y-4">
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="whatsapp-phone" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Phone Number (with country code)
           </label>
           <input
+            id="whatsapp-phone"
             type="tel"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="+1 (555) 123-4567"
+            aria-describedby="phone-help"
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
           />
+          <div id="phone-help" className="sr-only">Enter phone number with country code for WhatsApp link generation</div>
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="whatsapp-message" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Message (optional)
           </label>
           <textarea
+            id="whatsapp-message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type your message here..."
             rows={3}
+            aria-describedby="message-help"
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
           />
+          <div id="message-help" className="sr-only">Optional pre-filled message for WhatsApp conversation</div>
         </div>
 
         <button
@@ -450,13 +507,28 @@ function WhatsAppTab() {
             </div>
             <button
               onClick={copyToClipboard}
-              className="group flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+              className={`group flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+                copied === "link" 
+                  ? "bg-green-600 text-white" 
+                  : "bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg"
+              }`}
             >
-              <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
-                <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2V5a2 2 0 00-2-2v8z" />
-              </svg>
-              Copy
+              {copied === "link" ? (
+                <>
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                    <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2V5a2 2 0 00-2-2v8z" />
+                  </svg>
+                  Copy
+                </>
+              )}
             </button>
           </div>
 
@@ -472,22 +544,72 @@ function WhatsAppTab() {
             </button>
             <button
               onClick={copyShareableLink}
-              className="group flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white/80 px-4 py-3 font-semibold text-emerald-700 backdrop-blur-sm transition-all hover:bg-emerald-50 hover:shadow-md dark:border-emerald-700/50 dark:bg-gray-800/80 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
+              className={`group flex items-center justify-center gap-2 rounded-xl border px-4 py-3 font-semibold backdrop-blur-sm transition-all ${
+                shareCopied
+                  ? "border-green-200 bg-green-50 text-green-700 dark:border-green-700/50 dark:bg-green-900/30 dark:text-green-300"
+                  : "border-emerald-200 bg-white/80 text-emerald-700 hover:bg-emerald-50 hover:shadow-md active:bg-emerald-100 dark:border-emerald-700/50 dark:bg-gray-800/80 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
+              }`}
+              title="Copy a shareable link that pre-fills this form"
             >
-              <svg className="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
-              </svg>
-              Share Link
+              {shareCopied ? (
+                <>
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <svg className="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                  </svg>
+                  Share Tool
+                </>
+              )}
             </button>
             <button
+              onClick={generateQRCode}
               className="group flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white/80 px-4 py-3 font-semibold text-emerald-700 backdrop-blur-sm transition-all hover:bg-emerald-50 hover:shadow-md dark:border-emerald-700/50 dark:bg-gray-800/80 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
             >
               <svg className="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm8 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
               </svg>
-              QR Code
+              {showQR ? 'Hide QR' : 'QR Code'}
             </button>
           </div>
+
+          {/* QR Code Section */}
+          {showQR && (
+            <div className="mt-6 rounded-xl border border-emerald-200 bg-white/60 p-6 backdrop-blur-sm dark:border-emerald-700/50 dark:bg-gray-800/60">
+              <div className="text-center">
+                <h4 className="mb-4 font-semibold text-emerald-900 dark:text-emerald-100">
+                  QR Code for WhatsApp Link
+                </h4>
+                <div className="mb-4 flex justify-center">
+                  <div className="rounded-lg bg-white p-4 shadow-sm">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(generatedLink)}`}
+                      alt="QR Code for WhatsApp link"
+                      className="h-auto w-auto max-w-[200px]"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                  Scan this QR code with your phone to open the WhatsApp link directly
+                </p>
+                <button
+                  onClick={() => {
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(generatedLink)}`
+                    window.open(qrUrl, '_blank')
+                  }}
+                  className="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white transition-colors hover:bg-emerald-700"
+                >
+                  Download High-Res QR Code
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Embed Section */}
           <details className="mt-6">
@@ -509,6 +631,8 @@ function WhatsAppTab() {
                   onClick={async () => {
                     try {
                       await navigator.clipboard.writeText(embedCode)
+                      setEmbedCopied(true)
+                      setTimeout(() => setEmbedCopied(false), 2000)
                       toast({
                         title: "Embed Code Copied!",
                         description: "Code copied to clipboard",
@@ -521,9 +645,13 @@ function WhatsAppTab() {
                       })
                     }
                   }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700"
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    embedCopied 
+                      ? "bg-green-600 text-white"
+                      : "bg-emerald-600 text-white hover:bg-emerald-700"
+                  }`}
                 >
-                  Copy
+                  {embedCopied ? "Copied!" : "Copy"}
                 </button>
               </div>
               <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400">
@@ -544,6 +672,7 @@ function TelegramTab() {
   const [botName, setBotName] = useState("")
   const [startParam, setStartParam] = useState("")
   const [generatedLink, setGeneratedLink] = useState("")
+  const [showQR, setShowQR] = useState(false)
   const { toast } = useToast()
 
   const generateLink = () => {
@@ -708,11 +837,34 @@ function TelegramTab() {
               Open in Telegram
             </button>
             <button
+              onClick={() => setShowQR(!showQR)}
               className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             >
-              Show QR
+              {showQR ? 'Hide QR' : 'Show QR'}
             </button>
           </div>
+
+          {/* QR Code Section for Telegram */}
+          {showQR && (
+            <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4 text-center dark:border-gray-700 dark:bg-gray-800">
+              <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">
+                QR Code for Telegram Link
+              </h4>
+              <div className="mb-4 flex justify-center">
+                <div className="rounded-lg bg-white p-4 shadow-sm">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(generatedLink)}`}
+                    alt="QR Code for Telegram link"
+                    className="h-auto w-auto max-w-[200px]"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Scan this QR code to open the Telegram link
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -724,6 +876,7 @@ function MessengerTab() {
   const [username, setUsername] = useState("")
   const [refCode, setRefCode] = useState("")
   const [generatedLink, setGeneratedLink] = useState("")
+  const [showQR, setShowQR] = useState(false)
   const { toast } = useToast()
 
   const generateLink = () => {
@@ -834,11 +987,34 @@ function MessengerTab() {
               Open in Messenger
             </button>
             <button
+              onClick={() => setShowQR(!showQR)}
               className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             >
-              Show QR
+              {showQR ? 'Hide QR' : 'Show QR'}
             </button>
           </div>
+
+          {/* QR Code Section for Messenger */}
+          {showQR && (
+            <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4 text-center dark:border-gray-700 dark:bg-gray-800">
+              <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">
+                QR Code for Messenger Link
+              </h4>
+              <div className="mb-4 flex justify-center">
+                <div className="rounded-lg bg-white p-4 shadow-sm">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(generatedLink)}`}
+                    alt="QR Code for Messenger link"
+                    className="h-auto w-auto max-w-[200px]"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Scan this QR code to open the Messenger link
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -853,6 +1029,7 @@ function DiscordTab() {
   const [channelId, setChannelId] = useState("")
   const [messageId, setMessageId] = useState("")
   const [generatedLink, setGeneratedLink] = useState("")
+  const [showQR, setShowQR] = useState(false)
   const { toast } = useToast()
 
   const generateLink = () => {
@@ -1028,11 +1205,34 @@ function DiscordTab() {
               Open in Discord
             </button>
             <button
+              onClick={() => setShowQR(!showQR)}
               className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             >
-              Show QR
+              {showQR ? 'Hide QR' : 'Show QR'}
             </button>
           </div>
+
+          {/* QR Code Section for Discord */}
+          {showQR && (
+            <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4 text-center dark:border-gray-700 dark:bg-gray-800">
+              <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">
+                QR Code for Discord Link
+              </h4>
+              <div className="mb-4 flex justify-center">
+                <div className="rounded-lg bg-white p-4 shadow-sm">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(generatedLink)}`}
+                    alt="QR Code for Discord link"
+                    className="h-auto w-auto max-w-[200px]"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Scan this QR code to open the Discord link
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

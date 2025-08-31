@@ -2,8 +2,16 @@
 User-agent: *
 Allow: /
 
+# Disallow parameter-based URLs that don't add SEO value
+Disallow: /*?embed=*
+Disallow: /*?ref=*
+Disallow: /*?utm_*
+
 # Sitemap location
 Sitemap: https://smartgenerators.dev/sitemap.xml
 
 # Crawl delay (optional - helps prevent overwhelming the server)
 Crawl-delay: 1
+
+# Host specification for consistency
+Host: https://smartgenerators.dev

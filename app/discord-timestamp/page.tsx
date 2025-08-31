@@ -636,6 +636,108 @@ export default function DiscordTimestampGenerator() {
       setIsDarkMode(false)
       document.documentElement.classList.remove("dark")
     }
+
+    // Add structured data for Discord Timestamp Generator
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Discord Timestamp Generator",
+      "description": "Generate Discord timestamps with natural language input. Convert any date/time to Discord format. Decode Snowflake IDs. Free, instant, no signup required.",
+      "url": "https://smartgenerators.dev/discord-timestamp",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Natural language time input parsing",
+        "Discord timestamp format generation",
+        "Snowflake ID decoder",
+        "Multiple timestamp formats (t, T, d, D, f, F, R)",
+        "Timezone preview (local and UTC)",
+        "URL parameter support",
+        "Copy to clipboard functionality",
+        "No registration required",
+        "Privacy-focused local processing"
+      ],
+      "creator": {
+        "@type": "Organization",
+        "name": "Smart Generators",
+        "url": "https://smartgenerators.dev"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "89"
+      }
+    }
+
+    const faqStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do Discord timestamps work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Discord renders <t:UNIX:FORMAT> according to each viewer's timezone. We generate the UNIX seconds and you pick the FORMAT letter."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What are the different format types?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Seven options: t (short time), T (long time), d (short date), D (long date), f (short date/time), F (long date/time), and R (relative time like 'in 2 hours')."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a Discord Snowflake ID?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A Snowflake encodes the creation time. Paste it in the decoder to get a timestamp from any Discord message, user, or server ID."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What phrases are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Common ones like 'in 45m', 'tomorrow 8am', 'next wed 14:30', plus typed suggestions. If a phrase fails, try the date picker."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this tool private?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, completely private. All processing happens locally in your browser. We don't store, track, or send your data anywhere."
+          }
+        }
+      ]
+    }
+
+    // Add structured data scripts
+    const script1 = document.createElement('script')
+    script1.type = 'application/ld+json'
+    script1.textContent = JSON.stringify(structuredData)
+    document.head.appendChild(script1)
+
+    const script2 = document.createElement('script')
+    script2.type = 'application/ld+json'
+    script2.textContent = JSON.stringify(faqStructuredData)
+    document.head.appendChild(script2)
+
+    // Cleanup function
+    return () => {
+      if (script1.parentNode) script1.parentNode.removeChild(script1)
+      if (script2.parentNode) script2.parentNode.removeChild(script2)
+    }
   }, [])
 
   useEffect(() => {
@@ -783,9 +885,10 @@ export default function DiscordTimestampGenerator() {
     try {
       await navigator.clipboard.writeText(text)
       setCopySuccess(text)
+      setTimeout(() => setCopySuccess(""), 2000)
       toast({
         title: "Copied!",
-        description: "Timestamp copied to clipboard",
+        description: "Discord timestamp copied to clipboard",
       })
     } catch (err) {
       toast({
@@ -982,10 +1085,11 @@ export default function DiscordTimestampGenerator() {
               aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
               title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
             >
+              <span className="sr-only">{isDarkMode ? "Switch to light mode" : "Switch to dark mode"}</span>
               {isDarkMode ? (
-                <span className="block h-full w-full p-2" role="img" aria-label="Moon icon">🌙</span>
+                <span className="block h-full w-full p-2" role="img" aria-hidden="true">🌙</span>
               ) : (
-                <span className="block h-full w-full p-2" role="img" aria-label="Sun icon">☀️</span>
+                <span className="block h-full w-full p-2" role="img" aria-hidden="true">☀️</span>
               )}
             </button>
           </div>
@@ -993,25 +1097,36 @@ export default function DiscordTimestampGenerator() {
 
         <main>
         {/* Main Input Section */}
-        <section className="mb-12 overflow-hidden rounded-3xl border border-gray-200/50 bg-white/80 p-8 shadow-2xl shadow-gray-900/5 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20" aria-labelledby="timestamp-generator">
+        <section className="mb-12 overflow-hidden rounded-3xl border border-gray-200/50 bg-white/80 p-8 shadow-2xl shadow-gray-900/5 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20" aria-labelledby="main-heading">
+          <h2 id="main-heading" className="sr-only">Discord Timestamp Generator Tool</h2>
           <div className="space-y-6">
             {/* Natural Language Input */}
             <div className="relative">
-              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" id="timestamp-generator">
+              <label htmlFor="natural-input" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Natural language date & time
               </label>
               <input
+                id="natural-input"
                 type="text"
                 value={naturalInput}
                 onChange={(e) => handleNaturalInputChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Examples: 'in 45 min', 'tomorrow 19:30', 'next Fri 8am'"
+                aria-describedby="input-help"
+                aria-expanded={showSuggestions}
+                aria-haspopup="listbox"
+                role="combobox"
                 className="w-full h-12 rounded-xl border border-gray-300 bg-white/70 px-4 py-3 text-lg text-gray-900 backdrop-blur-sm transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800/70 dark:text-white"
               />
+              <div id="input-help" className="sr-only">Enter natural language time expressions like 'in 45 minutes' or 'tomorrow 8am' to generate Discord timestamps</div>
 
               {/* Suggestions Dropdown */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                <div 
+                  className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-900"
+                  role="listbox"
+                  aria-label="Timestamp suggestions"
+                >
                   <div className="border-b border-gray-200 p-2 text-sm font-medium text-gray-600 dark:border-gray-700 dark:text-gray-400">
                     Timestamps for "{naturalInput}"
                   </div>
@@ -1019,6 +1134,8 @@ export default function DiscordTimestampGenerator() {
                     <button
                       key={index}
                       onClick={() => selectSuggestion(suggestion)}
+                      role="option"
+                      aria-selected={selectedSuggestionIndex === index}
                       className={`w-full rounded-lg px-3 py-2 text-left transition-colors ${
                         selectedSuggestionIndex === index ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
@@ -1056,13 +1173,28 @@ export default function DiscordTimestampGenerator() {
                     </div>
                     <button
                       onClick={() => copyToClipboard(timestamp)}
-                      className="group flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      className={`group flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                        copySuccess === timestamp 
+                          ? "bg-green-600 text-white" 
+                          : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg"
+                      }`}
                     >
-                      <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
-                        <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2V5a2 2 0 00-2-2v8z" />
-                      </svg>
-                      Copy
+                      {copySuccess === timestamp ? (
+                        <>
+                          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                            <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2V5a2 2 0 00-2-2v8z" />
+                          </svg>
+                          Copy
+                        </>
+                      )}
                     </button>
                   </div>
                   

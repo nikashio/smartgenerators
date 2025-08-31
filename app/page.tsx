@@ -91,8 +91,10 @@ function Header({ toggleTheme, isDarkMode }: { toggleTheme: () => void; isDarkMo
               onClick={toggleTheme}
               className="h-10 w-10 rounded-full border border-gray-200/50 bg-white/80 text-sm backdrop-blur-sm transition-all hover:bg-gray-50 hover:shadow-md dark:border-gray-700/50 dark:bg-gray-900/80 dark:hover:bg-gray-800"
               aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+              title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
             >
-              {isDarkMode ? "🌙" : "☀️"}
+              <span className="sr-only">{isDarkMode ? "Switch to light mode" : "Switch to dark mode"}</span>
+              <span role="img" aria-hidden="true">{isDarkMode ? "🌙" : "☀️"}</span>
             </button>
           </nav>
         </div>
