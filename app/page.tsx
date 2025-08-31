@@ -52,6 +52,9 @@ export default function Home() {
         {/* Tools Grid */}
         <ToolsGrid />
         
+        {/* Blog Section */}
+        <BlogSection />
+        
         {/* Why Section */}
         <WhySection />
         
@@ -86,6 +89,12 @@ function Header({ toggleTheme, isDarkMode }: { toggleTheme: () => void; isDarkMo
               className="text-sm font-medium text-blue-600 dark:text-blue-400"
             >
               Home
+            </Link>
+            <Link 
+              href="/blog/whatsapp-link-generator-click-to-chat-guide" 
+              className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+            >
+              Blog
             </Link>
             <button
               onClick={toggleTheme}
@@ -231,6 +240,97 @@ function ToolsGrid() {
                 }`}
               >
                 Open Tool
+                <svg className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Blog Section Component
+function BlogSection() {
+  const blogPosts = [
+    {
+      id: "whatsapp-link-generator-guide",
+      title: "How to Create WhatsApp Click-to-Chat Links",
+      description: "Complete guide with QR codes — learn to build WhatsApp links that increase customer engagement and reduce friction.",
+      href: "/blog/whatsapp-link-generator-click-to-chat-guide",
+      icon: "💬",
+      color: "emerald",
+      readTime: "5 min read",
+      tags: ["WhatsApp", "Marketing", "QR Codes"]
+    }
+  ]
+
+  return (
+    <section className="py-16">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
+            Latest Guides
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Learn how to get the most out of our tools with step-by-step guides
+          </p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-1">
+          {blogPosts.map((post) => (
+            <div
+              key={post.id}
+              className="group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/80 p-8 shadow-2xl shadow-gray-900/5 backdrop-blur-sm transition-all hover:shadow-3xl dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20"
+            >
+              <div className="mb-6 flex items-start gap-4">
+                <div className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${
+                  post.color === 'emerald' 
+                    ? 'from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30'
+                    : 'from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30'
+                }`}>
+                  <span className="text-2xl">{post.icon}</span>
+                </div>
+                <div className="flex-1">
+                  <div className="mb-2 flex items-center gap-3">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      {post.title}
+                    </h3>
+                    <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                      {post.readTime}
+                    </span>
+                  </div>
+                  <p className="mb-4 text-gray-600 dark:text-gray-300">
+                    {post.description}
+                  </p>
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {post.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          post.color === 'emerald'
+                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                href={post.href}
+                className={`group/btn inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold text-white transition-all hover:shadow-lg ${
+                  post.color === 'emerald'
+                    ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                }`}
+              >
+                Read Guide
                 <svg className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
