@@ -1,3 +1,6 @@
+/**
+ * Root layout and SEO metadata for the application. Sets up global fonts/styles and the toaster.
+ */
 import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
@@ -45,6 +48,7 @@ export const metadata: Metadata = {
     generator: 'v0.app'
 }
 
+/** Root layout component that wraps all pages with HTML/body and global providers. */
 export default function RootLayout({
   children,
 }: {

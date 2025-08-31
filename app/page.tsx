@@ -4,7 +4,12 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
+import * as chrono from "chrono-node"
 
+/**
+ * Minimal, mobile-first UI for Discord timestamp generation and snowflake decoding.
+ * Emphasizes clarity and quick actions with accessible defaults.
+ */
 const formatOptions = [
   { value: "t", label: "Short Time", example: "16:20" },
   { value: "T", label: "Long Time", example: "16:20:30" },
@@ -15,6 +20,7 @@ const formatOptions = [
   { value: "R", label: "Relative Time", example: "2 months ago" },
 ]
 
+/** Main page component that handles input, parsing, generation, and UI state. */
 export default function DiscordTimestampGenerator() {
   const [naturalInput, setNaturalInput] = useState("")
   const [parseError, setParseError] = useState("")
@@ -76,6 +82,20 @@ export default function DiscordTimestampGenerator() {
     saveSettings()
   }, [dateFormat, timeFormat, enterCopies])
 
+  /** Fallback parser using chrono-node for robust natural language parsing. */
+  const parseWithChrono = (input: string): Date | null => {
+    try {
+      const isUS = (navigator.language || "en-US").startsWith("en-US")
+      const parser = isUS ? chrono.en : (chrono as any).en_GB || chrono.en
+      const results = parser.parse(input, new Date())
+      if (!results || results.length === 0) return null
+      return results[0].start.date()
+    } catch {
+      return null
+    }
+  }
+
+  /** Parse a broad set of natural-language time expressions into a Date. */
   const parseNaturalLanguage = (input: string): Date | null => {
     if (!input.trim()) return null
 
@@ -339,12 +359,17 @@ export default function DiscordTimestampGenerator() {
         return nativeParsed
       }
     } catch (e) {
-      // Continue to return null
+      // Continue to fallback
     }
+
+    // Fallback to chrono-node for broader coverage
+    const chronoDate = parseWithChrono(input)
+    if (chronoDate) return chronoDate
 
     return null
   }
 
+  /** Generate helpful suggestion options for partially entered inputs. */
   const generateSuggestions = (input: string): Array<{ text: string; date: Date; description: string }> => {
     if (!input.trim()) return []
 
@@ -403,8 +428,8 @@ export default function DiscordTimestampGenerator() {
       })
     })
 
-    // Handle "in" prefix with smart suggestions
-    if (inputLower.startsWith("in") && inputLower.length <= 4) {
+    // Handle "in" prefix with smart suggestions (supports: "in", "in 4", etc.)
+    if (/^in\s*$/.test(inputLower)) {
       const commonRelative = [
         { text: "in 15 minutes", minutes: 15 },
         { text: "in 30 minutes", minutes: 30 },
@@ -420,6 +445,26 @@ export default function DiscordTimestampGenerator() {
           description: `${minutes} minutes from now`,
         })
       })
+    } else {
+      const inNumber = inputLower.match(/^in\s+(\d{1,4})$/)
+      if (inNumber) {
+        const amount = Number.parseInt(inNumber[1])
+        const opts = [
+          { label: `${amount} minutes from now`, minutes: amount },
+          { label: `${amount} hours from now`, minutes: amount * 60 },
+          { label: `${amount} days from now`, minutes: amount * 60 * 24 },
+        ]
+        opts.forEach((o) => {
+          const futureDate = new Date(now.getTime() + o.minutes * 60 * 1000)
+          const unit = o.label.split(" ")[1]
+          const text = `in ${amount} ${unit}`
+          suggestions.push({
+            text,
+            date: futureDate,
+            description: o.label,
+          })
+        })
+      }
     }
 
     // Handle partial "tomorrow" or "today"
@@ -452,6 +497,7 @@ export default function DiscordTimestampGenerator() {
     return uniqueSuggestions
   }
 
+  /** Handle input changes, update suggestions and immediate timestamp preview. */
   const handleNaturalInputChange = (value: string) => {
     setNaturalInput(value)
     setParseError("")
@@ -467,7 +513,9 @@ export default function DiscordTimestampGenerator() {
 
     const newSuggestions = generateSuggestions(value)
     setSuggestions(newSuggestions)
-    setShowSuggestions(newSuggestions.length > 0) // Show dropdown if any suggestions
+    const hasSuggestions = newSuggestions.length > 0
+    setShowSuggestions(hasSuggestions) // Show dropdown if any suggestions
+    setSelectedSuggestionIndex(hasSuggestions ? 0 : -1) // Default to first suggestion
 
     const parsed = parseNaturalLanguage(value)
     if (parsed) {
@@ -507,7 +555,11 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
-  const selectSuggestion = (suggestion: { text: string; date: Date; description: string }) => {
+  /** Apply a selected suggestion to the input and produce a timestamp. Optionally copy immediately. */
+  const selectSuggestion = (
+    suggestion: { text: string; date: Date; description: string },
+    copyImmediately?: boolean,
+  ) => {
     setNaturalInput(suggestion.text)
     const localDateTime = new Date(suggestion.date.getTime() - suggestion.date.getTimezoneOffset() * 60000)
       .toISOString()
@@ -518,11 +570,16 @@ export default function DiscordTimestampGenerator() {
     const discordTimestamp = `<t:${unixTimestamp}:${format}>`
     setTimestamp(discordTimestamp)
 
+    if (copyImmediately) {
+      copyToClipboard(discordTimestamp)
+    }
+
     setShowSuggestions(false)
     setSelectedSuggestionIndex(-1)
     setParseError("")
   }
 
+  /** Submit natural language input and produce a timestamp if valid. */
   const handleNaturalInputSubmit = () => {
     if (!naturalInput.trim()) return
 
@@ -541,6 +598,7 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
+  /** On Enter, optionally copy the generated timestamp for quick workflows. */
   const handleEnterKeyCopy = () => {
     if (!naturalInput.trim()) return
 
@@ -618,6 +676,7 @@ export default function DiscordTimestampGenerator() {
     }
   }, [])
 
+  /** Decode a snowflake from URL params to pre-populate the UI. */
   const decodeSnowflakeFromParam = (snowflake: string, formatType: string) => {
     try {
       const snowflakeBig = BigInt(snowflake)
@@ -638,11 +697,13 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
+  /** Build a timestamp when passed unix/format via URL params. */
   const generateTimestampFromParams = (unix: number, formatType: string) => {
     const discordTimestamp = `<t:${unix}:${formatType}>`
     setTimestamp(discordTimestamp)
   }
 
+  /** Generate a Discord timestamp string from current selections. */
   const generateTimestamp = () => {
     if (naturalInput.trim()) {
       handleNaturalInputSubmit()
@@ -674,6 +735,7 @@ export default function DiscordTimestampGenerator() {
     setTimestamp(discordTimestamp)
   }
 
+  /** Decode a Discord snowflake into a timestamp and populate fields. */
   const decodeSnowflake = () => {
     if (!snowflakeId) {
       toast({
@@ -714,6 +776,7 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
+  /** Copy helper for timestamps and links. */
   const copyToClipboard = async (text = timestamp) => {
     if (!text) return
 
@@ -733,6 +796,7 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
+  /** Create and copy a shareable URL reflecting the current state. */
   const copyShareableLink = async () => {
     const url = new URL(window.location.href)
     url.search = ""
@@ -766,6 +830,7 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
+  /** Set the picker to the current local time and clear parsing state. */
   const setCurrentTime = () => {
     const now = new Date()
     const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
@@ -775,6 +840,7 @@ export default function DiscordTimestampGenerator() {
     setParsedPreview("")
   }
 
+  /** Human-readable preview for the chosen format and timezone. */
   const getPreview = (formatType = format, timezoneMode: "local" | "utc" = previewTimezone) => {
     if (!dateTime) return "No date selected"
 
@@ -827,6 +893,7 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
+  /** Toggle light/dark themes and persist preference. */
   const toggleTheme = () => {
     const newTheme = !isDarkMode
     setIsDarkMode(newTheme)
@@ -839,11 +906,13 @@ export default function DiscordTimestampGenerator() {
     }
   }
 
+  /** Keyboard shortcuts for suggestion selection and quick copy. */
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault()
       if (showSuggestions && selectedSuggestionIndex >= 0) {
-        selectSuggestion(suggestions[selectedSuggestionIndex])
+        const chosen = suggestions[selectedSuggestionIndex]
+        selectSuggestion(chosen, enterCopies)
       } else if (enterCopies && timestamp) {
         handleEnterKeyCopy()
       }
@@ -864,50 +933,34 @@ export default function DiscordTimestampGenerator() {
   }
 
   return (
-    <div
-      className={`min-h-screen transition-colors duration-200 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}
-    >
-      <div className="container mx-auto px-4 py-8">
-        <header className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Discord Timestamp Generator</h1>
-            <p className="text-lg opacity-80">
-              A quick in-and-out Discord timestamp generator. Type in a date or time, and hit Enter to copy.
-            </p>
+    <div className={`min-h-screen transition-colors duration-200 ${isDarkMode ? "bg-gray-950 text-white" : "bg-white text-gray-900"}`}>
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <header className="mb-8 flex items-start justify-between">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Discord Timestamp Generator</h1>
+            <p className="text-base text-gray-600 dark:text-gray-300">Type a time. Press Enter. Copy instantly.</p>
           </div>
-
           <button
             onClick={toggleTheme}
-            className={`h-12 px-4 rounded-lg border-2 transition-all duration-200 flex items-center justify-center gap-2 hover:scale-105 ${
-              isDarkMode
-                ? "border-gray-600 bg-gray-800 hover:bg-gray-700"
-                : "border-gray-300 bg-white hover:bg-gray-100"
+            className={`ml-4 h-10 w-10 shrink-0 rounded-full border text-sm transition-colors ${
+              isDarkMode ? "border-gray-800 bg-gray-900 hover:bg-gray-800" : "border-gray-200 bg-white hover:bg-gray-50"
             }`}
             aria-label="Toggle theme"
           >
             {isDarkMode ? (
-              <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <span className="block h-full w-full p-2">🌙</span>
             ) : (
-              <svg className="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-              </svg>
+              <span className="block h-full w-full p-2">☀️</span>
             )}
-            <span className="text-sm font-medium hidden lg:block">Theme</span>
           </button>
         </header>
 
         {/* Main Input Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+        <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
           <div className="space-y-6">
             {/* Natural Language Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Natural language date & time
               </label>
               <input
@@ -916,31 +969,26 @@ export default function DiscordTimestampGenerator() {
                 onChange={(e) => handleNaturalInputChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Examples: 'in 45 min', 'tomorrow 19:30', 'next Fri 8am'"
-                className="w-full px-4 py-3 text-lg border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 text-gray-900 dark:text-white"
+                className="w-full h-12 rounded-xl border border-gray-300 bg-white/70 px-4 py-3 text-lg text-gray-900 backdrop-blur-sm transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800/70 dark:text-white"
               />
 
               {/* Suggestions Dropdown */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                  <div className="p-2 text-sm font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                  <div className="border-b border-gray-200 p-2 text-sm font-medium text-gray-600 dark:border-gray-700 dark:text-gray-400">
                     Timestamps for "{naturalInput}"
                   </div>
                   {suggestions.map((suggestion, index) => (
                     <button
                       key={index}
                       onClick={() => selectSuggestion(suggestion)}
-                      className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
-                        selectedSuggestionIndex === index ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                      className={`w-full rounded-lg px-3 py-2 text-left transition-colors ${
+                        selectedSuggestionIndex === index ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-gray-400">⭐</span>
-                          <span className="font-medium text-gray-900 dark:text-white">{suggestion.description}</span>
-                        </div>
-                        <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
-                          &lt;t:{Math.floor(suggestion.date.getTime() / 1000)}:{format}&gt;
-                        </span>
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="font-medium text-gray-900 dark:text-white">{suggestion.description}</span>
+                        <span className="text-xs font-mono text-gray-500 dark:text-gray-400">&lt;t:{Math.floor(suggestion.date.getTime() / 1000)}:{format}&gt;</span>
                       </div>
                     </button>
                   ))}
@@ -948,27 +996,46 @@ export default function DiscordTimestampGenerator() {
               )}
             </div>
 
+            {/* Generated Timestamp Output */}
+            {timestamp && (
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
+                <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">Your Discord Timestamp</h3>
+                <div className="mb-3 flex items-center gap-2">
+                  <code className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 font-mono text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
+                    {timestamp}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(timestamp)}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Preview: {getPreview()}</div>
+              </div>
+            )}
+
             {/* Collapsible Manual Date Picker */}
             <details className="group">
-              <summary className="cursor-pointer text-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+              <summary className="cursor-pointer text-center text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
                 or use date picker
               </summary>
-              <div className="mt-4 space-y-4 border-t border-gray-200 dark:border-gray-600 pt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-4 space-y-4 border-t border-gray-200 pt-4 dark:border-gray-800">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Select Date and Time
                     </label>
-                    <div className="flex space-x-2">
+                    <div className="flex gap-0">
                       <input
                         type="datetime-local"
                         value={dateTime}
                         onChange={(e) => setDateTime(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="flex-1 h-12 rounded-l-lg rounded-r-none border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                       />
                       <button
                         onClick={setCurrentTime}
-                        className="px-4 py-2 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+                        className="h-12 rounded-r-lg rounded-l-none border border-l-0 border-gray-300 bg-white px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 whitespace-nowrap"
                       >
                         Use Now
                       </button>
@@ -976,13 +1043,13 @@ export default function DiscordTimestampGenerator() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Choose Display Format
                     </label>
                     <select
                       value={format}
                       onChange={(e) => setFormat(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full h-12 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                       {formatOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -998,53 +1065,36 @@ export default function DiscordTimestampGenerator() {
             {/* Generate Button */}
             <button
               onClick={generateTimestamp}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+              className="w-full h-12 rounded-xl bg-blue-600 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-blue-700"
             >
               Generate Discord Timestamp
             </button>
 
-            {/* Generated Timestamp Output */}
-            {timestamp && (
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Your Discord Timestamp</h3>
-                <div className="flex items-center space-x-2 mb-3">
-                  <code className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded px-3 py-2 text-sm font-mono text-gray-900 dark:text-white">
-                    {timestamp}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(timestamp)}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                  >
-                    Copy
-                  </button>
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Preview: {getPreview()}</div>
-              </div>
-            )}
+            
           </div>
         </div>
 
         {/* Collapsible Snowflake Decoder */}
-        <details className="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6">
-          <summary className="cursor-pointer p-6 font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-xl">
+        <details className="mb-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+          <summary className="cursor-pointer rounded-2xl p-6 font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800">
             🔍 Snowflake ID Decoder
           </summary>
-          <div className="px-6 pb-6 space-y-4">
+          <div className="space-y-4 px-6 pb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Discord Snowflake ID
               </label>
-              <div className="flex space-x-2">
+              <div className="flex gap-2">
                 <input
                   type="text"
                   value={snowflakeId}
                   onChange={(e) => setSnowflakeId(e.target.value)}
                   placeholder="e.g., 1234567890123456789"
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="flex-1 h-12 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 />
                 <button
                   onClick={decodeSnowflake}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  className="h-12 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
                 >
                   Decode
                 </button>
@@ -1054,70 +1104,70 @@ export default function DiscordTimestampGenerator() {
         </details>
 
         {/* How to Use Section */}
-        <details className="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6" open={howToUseOpen}>
+        <details className="mb-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900" open={howToUseOpen} onToggle={(e) => setHowToUseOpen((e.target as HTMLDetailsElement).open)}>
           <summary
-            className="cursor-pointer p-6 font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-xl flex items-center"
-            onClick={() => setHowToUseOpen(!howToUseOpen)}
+            className="flex cursor-pointer items-center rounded-2xl p-6 font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
           >
             📖 How to Use
             <span className="ml-auto text-gray-400">{howToUseOpen ? "−" : "+"}</span>
           </summary>
-          {howToUseOpen && (
-            <div className="px-6 pb-6 space-y-4 text-gray-700 dark:text-gray-300">
-              <ol className="list-decimal list-inside space-y-2">
-                <li>Type a natural date/time like "in 30 minutes" or "tomorrow 3pm"</li>
-                <li>Or use the manual date picker for precise control</li>
-                <li>Choose your preferred Discord timestamp format</li>
-                <li>Copy the generated timestamp and paste it into Discord</li>
+          <div className="space-y-4 px-6 pb-6 text-gray-700 dark:text-gray-300">
+              <ol className="list-inside list-decimal space-y-2">
+                <li>Type a natural phrase: e.g., <span className="font-mono">in 45 min</span>, <span className="font-mono">tomorrow 19:30</span>, <span className="font-mono">next Fri 8am</span>.</li>
+                <li>Pick from the suggestions with Arrow keys; press Enter to select. The first match is auto-selected.</li>
+                <li>Use the date picker if you prefer precise control and then pick a display format.</li>
+                <li>Click <span className="font-medium">Generate Discord Timestamp</span> or just press Enter to create the code.</li>
+                <li>Click <span className="font-medium">Copy</span> (or press Enter if enabled) to copy the <span className="font-mono">&lt;t:UNIX:FORMAT&gt;</span> string.</li>
+                <li>Paste into Discord; it will render for each user in their local timezone.</li>
               </ol>
-            </div>
-          )}
+              <ul className="list-inside list-disc space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                <li>Tip: Type <span className="font-mono">in</span> to see quick options (15m, 30m, 1h, 2h) or <span className="font-mono">in 4</span> for minutes/hours/days.</li>
+                <li>Toggle theme from the top-right. Your preference and settings are saved locally.</li>
+                <li>Use the Snowflake decoder to turn any Discord ID into a timestamp.</li>
+              </ul>
+          </div>
         </details>
 
         {/* FAQ Section */}
-        <details className="bg-white dark:bg-gray-800 rounded-xl shadow-lg" open={faqOpen}>
+        <details className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900" open={faqOpen} onToggle={(e) => setFaqOpen((e.target as HTMLDetailsElement).open)}>
           <summary
-            className="cursor-pointer p-6 font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-xl flex items-center"
-            onClick={() => setFaqOpen(!faqOpen)}
+            className="flex cursor-pointer items-center rounded-2xl p-6 font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
           >
             ❓ Frequently Asked Questions
             <span className="ml-auto text-gray-400">{faqOpen ? "−" : "+"}</span>
           </summary>
-          {faqOpen && (
-            <div className="px-6 pb-6 space-y-4">
-              <div className="space-y-4">
+          <div className="space-y-4 px-6 pb-6">
+              <div className="space-y-6">
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">How do Discord timestamps work?</h4>
                   <p className="text-gray-700 dark:text-gray-300">
-                    Discord timestamps show the same moment in time to all users, but each person sees it in their local
-                    timezone. The timestamp format is &lt;t:UNIX:FORMAT&gt;.
+                    Discord renders <span className="font-mono">&lt;t:UNIX:FORMAT&gt;</span> according to each viewer’s timezone. We generate the UNIX seconds and you pick the FORMAT letter.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">What are the different format types?</h4>
                   <p className="text-gray-700 dark:text-gray-300">
-                    There are 7 formats: Short Time (t), Long Time (T), Short Date (d), Long Date (D), Short Date/Time
-                    (f), Long Date/Time (F), and Relative Time (R).
+                    Seven options: <span className="font-mono">t</span>, <span className="font-mono">T</span>, <span className="font-mono">d</span>, <span className="font-mono">D</span>, <span className="font-mono">f</span>, <span className="font-mono">F</span>, and <span className="font-mono">R</span> (relative time like “in 2 hours”).
                   </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Why does my preview differ from friends?</h4>
+                  <p className="text-gray-700 dark:text-gray-300">Previews are shown in your timezone by default. Discord also localizes for each user, so displays can differ but point to the same moment.</p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">What is a Discord Snowflake ID?</h4>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    A Snowflake is Discord's unique ID system. Every message, user, server, etc. has a Snowflake ID that
-                    contains timestamp information about when it was created.
-                  </p>
+                  <p className="text-gray-700 dark:text-gray-300">A Snowflake encodes the creation time. Paste it in the decoder to get a timestamp.</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">
-                    Can I share a link with a pre-filled timestamp?
-                  </h4>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Yes! Use the "Copy Link" button to create a shareable URL with your current timestamp settings.
-                  </p>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Can I share a link with a pre‑filled timestamp?</h4>
+                  <p className="text-gray-700 dark:text-gray-300">Yes. Use <span className="font-medium">Copy Link</span> to copy a URL that preserves your current values (time, format, timezone).</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">What phrases are supported?</h4>
+                  <p className="text-gray-700 dark:text-gray-300">Common ones like <span className="font-mono">in 45m</span>, <span className="font-mono">tomorrow 8am</span>, <span className="font-mono">next wed 14:30</span>, plus typed suggestions. If a phrase fails, try the picker.</p>
                 </div>
               </div>
-            </div>
-          )}
+          </div>
         </details>
       </div>
     </div>
