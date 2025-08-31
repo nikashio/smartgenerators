@@ -20,9 +20,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Discord Timestamp Generator - Create Discord Timestamps & Decode Snowflakes",
+  title: "Discord Timestamp Generator - Free Tool for Discord Time Formatting",
   description:
-    "Free Discord timestamp generator and converter. Create <t:UNIX:FORMAT> codes, decode snowflakes, and preview relative times.",
+    "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones. 100% free tool.",
   keywords:
     "Discord timestamp generator, Discord timestamps, snowflake decoder, Discord time format, Discord timestamp tool, Discord timestamp UTC",
   authors: [{ name: "Discord Timestamp Generator" }],
@@ -30,20 +30,22 @@ export const metadata: Metadata = {
   publisher: "Discord Timestamp Generator",
   robots: "index, follow",
   openGraph: {
-    title: "Discord Timestamp Generator - Create Discord Timestamps & Decode Snowflakes",
+    title: "Discord Timestamp Generator - Free Tool for Discord Time Formatting",
     description:
-      "Free Discord timestamp generator and converter. Create <t:UNIX:FORMAT> codes, decode snowflakes, and preview relative times.",
+      "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones. 100% free tool.",
     type: "website",
     locale: "en_US",
+    url: "https://smartgenerators.dev",
+    siteName: "Smart Generators",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Discord Timestamp Generator - Create Discord Timestamps & Decode Snowflakes",
+    title: "Discord Timestamp Generator - Free Tool for Discord Time Formatting",
     description:
-      "Free Discord timestamp generator and converter. Create <t:UNIX:FORMAT> codes, decode snowflakes, and preview relative times.",
+      "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones. 100% free tool.",
   },
   alternates: {
-    canonical: "/discord-timestamp",
+    canonical: "/",
   },
     generator: 'v0.app'
 }
@@ -54,8 +56,41 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Discord Timestamp Generator",
+    "description": "Generate Discord timestamps instantly with natural language input. Create <t:UNIX:FORMAT> codes, decode snowflakes, and share time-synced messages across timezones.",
+    "url": "https://smartgenerators.dev",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Natural language time input parsing",
+      "Discord timestamp generation",
+      "Snowflake ID decoding",
+      "Multiple timestamp formats",
+      "Real-time preview",
+      "Timezone support"
+    ],
+    "creator": {
+      "@type": "Organization",
+      "name": "Smart Generators"
+    }
+  }
+
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body>
         {children}
         <Toaster />

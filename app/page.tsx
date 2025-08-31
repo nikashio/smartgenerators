@@ -945,22 +945,24 @@ export default function DiscordTimestampGenerator() {
             className={`ml-4 h-10 w-10 shrink-0 rounded-full border text-sm transition-colors ${
               isDarkMode ? "border-gray-800 bg-gray-900 hover:bg-gray-800" : "border-gray-200 bg-white hover:bg-gray-50"
             }`}
-            aria-label="Toggle theme"
+            aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+            title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
           >
             {isDarkMode ? (
-              <span className="block h-full w-full p-2">🌙</span>
+              <span className="block h-full w-full p-2" role="img" aria-label="Moon icon">🌙</span>
             ) : (
-              <span className="block h-full w-full p-2">☀️</span>
+              <span className="block h-full w-full p-2" role="img" aria-label="Sun icon">☀️</span>
             )}
           </button>
         </header>
 
+        <main>
         {/* Main Input Section */}
-        <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <section className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900" aria-labelledby="timestamp-generator">
           <div className="space-y-6">
             {/* Natural Language Input */}
             <div className="relative">
-              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" id="timestamp-generator">
                 Natural language date & time
               </label>
               <input
@@ -999,7 +1001,7 @@ export default function DiscordTimestampGenerator() {
             {/* Generated Timestamp Output */}
             {timestamp && (
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
-                <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">Your Discord Timestamp</h3>
+                <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">Your Discord Timestamp</h2>
                 <div className="mb-3 flex items-center gap-2">
                   <code className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 font-mono text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
                     {timestamp}
@@ -1072,12 +1074,13 @@ export default function DiscordTimestampGenerator() {
 
             
           </div>
-        </div>
+        </section>
 
         {/* Collapsible Snowflake Decoder */}
-        <details className="mb-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <section className="mb-6">
+        <details className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
           <summary className="cursor-pointer rounded-2xl p-6 font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800">
-            🔍 Snowflake ID Decoder
+            <h2 className="inline">🔍 Snowflake ID Decoder</h2>
           </summary>
           <div className="space-y-4 px-6 pb-6">
             <div>
@@ -1102,13 +1105,15 @@ export default function DiscordTimestampGenerator() {
             </div>
           </div>
         </details>
+        </section>
 
         {/* How to Use Section */}
-        <details className="mb-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900" open={howToUseOpen} onToggle={(e) => setHowToUseOpen((e.target as HTMLDetailsElement).open)}>
+        <section className="mb-6">
+        <details className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900" open={howToUseOpen} onToggle={(e) => setHowToUseOpen((e.target as HTMLDetailsElement).open)}>
           <summary
             className="flex cursor-pointer items-center rounded-2xl p-6 font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
           >
-            📖 How to Use
+            <h2 className="inline">📖 How to Use</h2>
             <span className="ml-auto text-gray-400">{howToUseOpen ? "−" : "+"}</span>
           </summary>
           <div className="space-y-4 px-6 pb-6 text-gray-700 dark:text-gray-300">
@@ -1127,48 +1132,52 @@ export default function DiscordTimestampGenerator() {
               </ul>
           </div>
         </details>
+        </section>
 
         {/* FAQ Section */}
+        <section>
         <details className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900" open={faqOpen} onToggle={(e) => setFaqOpen((e.target as HTMLDetailsElement).open)}>
           <summary
             className="flex cursor-pointer items-center rounded-2xl p-6 font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
           >
-            ❓ Frequently Asked Questions
+            <h2 className="inline">❓ Frequently Asked Questions</h2>
             <span className="ml-auto text-gray-400">{faqOpen ? "−" : "+"}</span>
           </summary>
           <div className="space-y-4 px-6 pb-6">
               <div className="space-y-6">
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">How do Discord timestamps work?</h4>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">How do Discord timestamps work?</h3>
                   <p className="text-gray-700 dark:text-gray-300">
-                    Discord renders <span className="font-mono">&lt;t:UNIX:FORMAT&gt;</span> according to each viewer’s timezone. We generate the UNIX seconds and you pick the FORMAT letter.
+                    Discord renders <span className="font-mono">&lt;t:UNIX:FORMAT&gt;</span> according to each viewer's timezone. We generate the UNIX seconds and you pick the FORMAT letter.
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">What are the different format types?</h4>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">What are the different format types?</h3>
                   <p className="text-gray-700 dark:text-gray-300">
-                    Seven options: <span className="font-mono">t</span>, <span className="font-mono">T</span>, <span className="font-mono">d</span>, <span className="font-mono">D</span>, <span className="font-mono">f</span>, <span className="font-mono">F</span>, and <span className="font-mono">R</span> (relative time like “in 2 hours”).
+                    Seven options: <span className="font-mono">t</span>, <span className="font-mono">T</span>, <span className="font-mono">d</span>, <span className="font-mono">D</span>, <span className="font-mono">f</span>, <span className="font-mono">F</span>, and <span className="font-mono">R</span> (relative time like "in 2 hours").
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Why does my preview differ from friends?</h4>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Why does my preview differ from friends?</h3>
                   <p className="text-gray-700 dark:text-gray-300">Previews are shown in your timezone by default. Discord also localizes for each user, so displays can differ but point to the same moment.</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">What is a Discord Snowflake ID?</h4>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">What is a Discord Snowflake ID?</h3>
                   <p className="text-gray-700 dark:text-gray-300">A Snowflake encodes the creation time. Paste it in the decoder to get a timestamp.</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Can I share a link with a pre‑filled timestamp?</h4>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Can I share a link with a pre‑filled timestamp?</h3>
                   <p className="text-gray-700 dark:text-gray-300">Yes. Use <span className="font-medium">Copy Link</span> to copy a URL that preserves your current values (time, format, timezone).</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">What phrases are supported?</h4>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">What phrases are supported?</h3>
                   <p className="text-gray-700 dark:text-gray-300">Common ones like <span className="font-mono">in 45m</span>, <span className="font-mono">tomorrow 8am</span>, <span className="font-mono">next wed 14:30</span>, plus typed suggestions. If a phrase fails, try the picker.</p>
                 </div>
               </div>
           </div>
         </details>
+        </section>
+        </main>
       </div>
     </div>
   )
