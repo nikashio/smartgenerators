@@ -252,7 +252,7 @@ export default function BlogPost() {
           {/* Related Tools */}
           <div className="rounded-3xl border border-gray-200/50 bg-white/80 p-8 shadow-2xl shadow-gray-900/5 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20">
             <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Related Tools</h2>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <Link href="/chat-link-generator" className="group rounded-xl border border-gray-200/50 p-6 transition-all hover:shadow-lg dark:border-gray-700/50 dark:hover:bg-gray-800/50">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30">
@@ -275,6 +275,17 @@ export default function BlogPost() {
                   </div>
                 </div>
               </Link>
+              <Link href="/countdown" className="group rounded-xl border border-gray-200/50 p-6 transition-all hover:shadow-lg dark:border-gray-700/50 dark:hover:bg-gray-800/50">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30">
+                    <span className="text-xl">⏳</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Countdown Timer Generator</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Create countdown timers for events and launches</p>
+                  </div>
+                </div>
+              </Link>
             </div>
           </div>
         </main>
@@ -289,6 +300,10 @@ export default function BlogPost() {
               <span className="text-gray-500">•</span>
               <Link href="/discord-timestamp" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                 Discord Timestamps
+              </Link>
+              <span className="text-gray-500">•</span>
+              <Link href="/countdown" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                Countdown Timer
               </Link>
               <span className="text-gray-500">•</span>
               <span className="text-gray-500">More tools coming soon...</span>

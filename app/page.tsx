@@ -175,6 +175,15 @@ function ToolsGrid() {
       icon: "🔗",
       color: "emerald",
       features: ["Multi-platform support", "QR code generation", "Embed widgets"]
+    },
+    {
+      id: "countdown",
+      title: "Countdown Timer Generator",
+      description: "Create countdown timers for events, launches, exams, or streams with shareable links.",
+      href: "/countdown",
+      icon: "⏳",
+      color: "purple",
+      features: ["Shareable links", "Embeddable widgets", "Social sharing"]
     }
   ]
 
@@ -190,7 +199,7 @@ function ToolsGrid() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <div
               key={tool.id}
@@ -200,7 +209,9 @@ function ToolsGrid() {
                 <div className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${
                   tool.color === 'blue' 
                     ? 'from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30' 
-                    : 'from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30'
+                    : tool.color === 'emerald' 
+                    ? 'from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30'
+                    : 'from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30'
                 }`}>
                   <span className="text-2xl">{tool.icon}</span>
                 </div>
@@ -222,7 +233,9 @@ function ToolsGrid() {
                       className={`rounded-full px-3 py-1 text-xs font-medium ${
                         tool.color === 'blue'
                           ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                          : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                          : tool.color === 'emerald'
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                          : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
                       }`}
                     >
                       {feature}
@@ -236,7 +249,9 @@ function ToolsGrid() {
                 className={`group/btn inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold text-white transition-all hover:shadow-lg ${
                   tool.color === 'blue'
                     ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
-                    : 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700'
+                    : tool.color === 'emerald'
+                    ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                 }`}
               >
                 Open Tool
@@ -478,6 +493,9 @@ function Footer() {
               </Link>
               <Link href="/chat-link-generator" className="block text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
                 Chat Link Generator
+              </Link>
+              <Link href="/countdown" className="block text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+                Countdown Timer Generator
               </Link>
             </div>
           </div>
