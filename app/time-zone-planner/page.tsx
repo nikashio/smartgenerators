@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback, Suspense } from "react"
+
+// Force dynamic rendering - prevent static generation for client components
+export const dynamic = 'force-dynamic'
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -505,5 +508,20 @@ function TimeZonePlannerContent() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function TimeZonePlanner() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-cyan-50 dark:from-gray-950 dark:via-gray-900 dark:to-cyan-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading Time Zone Meeting Planner...</p>
+        </div>
+      </div>
+    }>
+      <TimeZonePlannerContent />
+    </Suspense>
   )
 }

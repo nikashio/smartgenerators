@@ -1,6 +1,9 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback, Suspense } from "react"
+
+// Force dynamic rendering - prevent static generation for client components
+export const dynamic = 'force-dynamic'
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -22,7 +25,7 @@ import {
  * Read-only view of shared time zone meeting planner
  * Shows suggested meeting times for a shared planner link
  */
-export default function TimeZonePlannerView() {
+function TimeZonePlannerViewContent() {
   const searchParams = useSearchParams()
   const { toast } = useToast()
   const [plannerState, setPlannerState] = useState<PlannerState | null>(null)
@@ -330,5 +333,20 @@ export default function TimeZonePlannerView() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function TimeZonePlannerView() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-cyan-50 dark:from-gray-950 dark:via-gray-900 dark:to-cyan-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading shared planner...</p>
+        </div>
+      </div>
+    }>
+      <TimeZonePlannerViewContent />
+    </Suspense>
   )
 }
