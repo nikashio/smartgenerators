@@ -3,11 +3,12 @@ import { getEventBySlug } from "@/lib/seasonal-events"
 import { notFound } from "next/navigation"
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const event = getEventBySlug(params.slug)
+  const { slug } = await params
+  const event = getEventBySlug(slug)
   
   if (!event) {
     return {

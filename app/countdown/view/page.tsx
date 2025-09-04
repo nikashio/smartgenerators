@@ -153,32 +153,32 @@ export default function CountdownView() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8">
-                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
+                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8 flex flex-col items-center justify-center">
+                      <div className="tabular-nums text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
                         {timeLeft.days}
                       </div>
                       <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 md:text-base">
                         Day{timeLeft.days !== 1 ? 's' : ''}
                       </div>
                     </div>
-                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8">
-                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
+                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8 flex flex-col items-center justify-center">
+                      <div className="tabular-nums text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
                         {timeLeft.hours}
                       </div>
                       <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 md:text-base">
                         Hour{timeLeft.hours !== 1 ? 's' : ''}
                       </div>
                     </div>
-                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8">
-                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
+                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8 flex flex-col items-center justify-center">
+                      <div className="tabular-nums text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
                         {timeLeft.minutes}
                       </div>
                       <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 md:text-base">
                         Minute{timeLeft.minutes !== 1 ? 's' : ''}
                       </div>
                     </div>
-                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8">
-                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
+                    <div className="rounded-xl bg-white/80 p-6 shadow-md dark:bg-gray-800/80 md:p-8 flex flex-col items-center justify-center">
+                      <div className="tabular-nums text-3xl font-bold text-blue-600 dark:text-blue-400 md:text-4xl lg:text-5xl">
                         {timeLeft.seconds}
                       </div>
                       <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 md:text-base">

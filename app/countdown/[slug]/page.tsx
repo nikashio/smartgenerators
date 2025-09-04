@@ -36,7 +36,7 @@ function getEventInfo(event: SeasonalEvent): string {
 }
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 /**
@@ -56,6 +56,7 @@ export default function PublicCountdownPage({ params }: Props) {
     expired: false
   })
   const [embedCode, setEmbedCode] = useState("")
+  const [shareUrl, setShareUrl] = useState("")
   const [copySuccess, setCopySuccess] = useState("")
   const [isDarkMode, setIsDarkMode] = useState(false)
 
@@ -63,32 +64,39 @@ export default function PublicCountdownPage({ params }: Props) {
 
   // Initialize event data
   useEffect(() => {
-    const eventData = getEventBySlug(params.slug)
-    if (!eventData) {
-      notFound()
-      return
-    }
-    setEvent(eventData)
+    const initializeEvent = async () => {
+      const { slug } = await params
+      const eventData = getEventBySlug(slug)
+      if (!eventData) {
+        notFound()
+        return
+      }
+      setEvent(eventData)
 
-    // Generate embed code
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://smartgenerators.dev'
-    const embed = `<iframe src="${baseUrl}/countdown/${eventData.slug}?embed=1" width="400" height="200" frameborder="0" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></iframe>`
-    setEmbedCode(embed)
+      // Generate share and embed code
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://smartgenerators.dev'
+      const viewer = `${baseUrl}/countdown/view?event=${encodeURIComponent(eventData.name)}&date=${encodeURIComponent(eventData.date)}&theme=${isDarkMode ? 'dark' : 'light'}`
+      setShareUrl(viewer)
+      const embed = `<iframe src="${baseUrl}/countdown/${eventData.slug}?embed=1" width="400" height="200" frameborder="0" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></iframe>`
+      setEmbedCode(embed)
 
-    // Theme detection
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem("theme")
-      const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-      
-      if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
-        setIsDarkMode(true)
-        document.documentElement.classList.add("dark")
-      } else {
-        setIsDarkMode(false)
-        document.documentElement.classList.remove("dark")
+      // Theme detection
+      if (typeof window !== 'undefined') {
+        const savedTheme = localStorage.getItem("theme")
+        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+        
+        if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+          setIsDarkMode(true)
+          document.documentElement.classList.add("dark")
+        } else {
+          setIsDarkMode(false)
+          document.documentElement.classList.remove("dark")
+        }
       }
     }
-  }, [params.slug])
+
+    initializeEvent()
+  }, [params])
 
   // Calculate time left
   const calculateTimeLeft = useCallback(() => {
@@ -388,19 +396,19 @@ export default function PublicCountdownPage({ params }: Props) {
               ) : (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
                   <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
-                    <div className="font-bold text-4xl sm:text-5xl">{timeLeft.days}</div>
+                    <div className="tabular-nums font-bold text-4xl sm:text-5xl">{timeLeft.days}</div>
                     <div className="text-blue-100 text-lg">Day{timeLeft.days !== 1 ? 's' : ''}</div>
                   </div>
                   <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
-                    <div className="font-bold text-4xl sm:text-5xl">{timeLeft.hours}</div>
+                    <div className="tabular-nums font-bold text-4xl sm:text-5xl">{timeLeft.hours}</div>
                     <div className="text-blue-100 text-lg">Hour{timeLeft.hours !== 1 ? 's' : ''}</div>
                   </div>
                   <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
-                    <div className="font-bold text-4xl sm:text-5xl">{timeLeft.minutes}</div>
+                    <div className="tabular-nums font-bold text-4xl sm:text-5xl">{timeLeft.minutes}</div>
                     <div className="text-blue-100 text-lg">Minute{timeLeft.minutes !== 1 ? 's' : ''}</div>
                   </div>
                   <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
-                    <div className="font-bold text-4xl sm:text-5xl">{timeLeft.seconds}</div>
+                    <div className="tabular-nums font-bold text-4xl sm:text-5xl">{timeLeft.seconds}</div>
                     <div className="text-blue-100 text-lg">Second{timeLeft.seconds !== 1 ? 's' : ''}</div>
                   </div>
                 </div>
@@ -413,11 +421,11 @@ export default function PublicCountdownPage({ params }: Props) {
                   <div className="flex gap-2">
                     <div className="flex-1 rounded-lg border border-blue-200 bg-white px-3 py-2.5 dark:border-blue-700/50 dark:bg-gray-800">
                       <code className="block break-all text-base text-black dark:text-white font-medium">
-                        {typeof window !== 'undefined' ? window.location.href.replace('?embed=1', '') : ''}
+                        {shareUrl}
                       </code>
                     </div>
                     <button
-                      onClick={() => copyToClipboard(typeof window !== 'undefined' ? window.location.href.replace('?embed=1', '') : '', "URL")}
+                      onClick={() => copyToClipboard(shareUrl, "URL")}
                       className={`flex items-center gap-2 rounded-lg px-4 py-2.5 font-medium text-lg transition-all ${
                         copySuccess === "URL"
                           ? "bg-green-600 text-white"
@@ -499,7 +507,7 @@ export default function PublicCountdownPage({ params }: Props) {
                 Want to share this countdown with friends or add it to your website?
               </p>
               <ul className="text-lg text-gray-700 dark:text-gray-300">
-                <li><strong>Copy link:</strong> Share the unique countdown page using the link above.</li>
+                <li><strong>Copy link:</strong> Share the dedicated live countdown viewer link above.</li>
                 <li><strong>Embed widget:</strong> Paste our simple iframe code into your blog, website, or forum.</li>
               </ul>
             </div>

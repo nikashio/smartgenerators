@@ -172,7 +172,7 @@ function ToolsGrid() {
       features: ["Natural language input", "Multiple formats", "Snowflake decoder"]
     },
     {
-      id: "chat-link-generator", 
+      id: "chat-link-generator",
       title: "Chat Link Generator",
       description: "Create WhatsApp, Telegram, Messenger & Discord deep links with optional QR codes.",
       href: "/chat-link-generator",
@@ -188,6 +188,15 @@ function ToolsGrid() {
       icon: "⏳",
       color: "purple",
       features: ["Shareable links", "Embeddable widgets", "Social sharing"]
+    },
+    {
+      id: "add-to-calendar",
+      title: "Add to Calendar Link Generator",
+      description: "Create calendar links and downloadable .ics files for Google, Outlook, Apple Calendar, and more.",
+      href: "/add-to-calendar",
+      icon: "📅",
+      color: "indigo",
+      features: ["Multi-calendar support", "ICS file download", "Recurring events"]
     }
   ]
 
@@ -203,11 +212,11 @@ function ToolsGrid() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
           {tools.map((tool) => (
             <div
               key={tool.id}
-              className="group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/80 p-8 shadow-2xl shadow-gray-900/5 backdrop-blur-sm transition-all hover:shadow-3xl dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20"
+              className="group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/80 p-8 shadow-2xl shadow-gray-900/5 backdrop-blur-sm transition-all hover:shadow-3xl dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20 flex flex-col min-h-[400px]"
             >
               <div className="mb-6 flex items-start gap-4">
                 <div className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${
@@ -229,7 +238,7 @@ function ToolsGrid() {
                 </div>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-6 flex-grow">
                 <div className="flex flex-wrap gap-2">
                   {tool.features.map((feature, index) => (
                     <span
@@ -248,21 +257,23 @@ function ToolsGrid() {
                 </div>
               </div>
 
-              <Link
-                href={tool.href}
-                className={`group/btn inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold text-white transition-all hover:shadow-lg ${
-                  tool.color === 'blue'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
-                    : tool.color === 'emerald'
-                    ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
-                }`}
-              >
-                Open Tool
-                <svg className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </Link>
+              <div className="mt-auto">
+                <Link
+                  href={tool.href}
+                  className={`group/btn inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold text-white transition-all hover:shadow-lg ${
+                    tool.color === 'blue'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                      : tool.color === 'emerald'
+                      ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700'
+                      : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+                  }`}
+                >
+                  Open Tool
+                  <svg className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </Link>
+              </div>
             </div>
           ))}
         </div>
@@ -584,13 +595,16 @@ function Footer() {
               <Link href="/countdown" className="block text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
                 Countdown Timer Generator
               </Link>
+              <Link href="/add-to-calendar" className="block text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+                Add to Calendar Link Generator
+              </Link>
             </div>
           </div>
 
           <div>
             <h4 className="mb-4 font-semibold text-gray-900 dark:text-white">Legal</h4>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Smart Generators is not affiliated with Discord, WhatsApp, Telegram, or Meta.
+              Smart Generators is not affiliated with Discord, WhatsApp, Telegram, Meta, Google, Microsoft, or Yahoo.
             </p>
             <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
               © {new Date().getFullYear()} Smart Generators
