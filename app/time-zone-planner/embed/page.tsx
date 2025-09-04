@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,7 +19,7 @@ import {
  * Embedded compact widget for time zone meeting planner
  * Shows a simplified view suitable for embedding
  */
-export default function TimeZonePlannerEmbed() {
+function TimeZonePlannerEmbedContent() {
   const searchParams = useSearchParams()
   const { toast } = useToast()
   const [plannerState, setPlannerState] = useState<PlannerState | null>(null)
@@ -260,5 +260,20 @@ export default function TimeZonePlannerEmbed() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function TimeZonePlannerEmbed() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-cyan-50 dark:from-gray-950 dark:via-gray-900 dark:to-cyan-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading planner...</p>
+        </div>
+      </div>
+    }>
+      <TimeZonePlannerEmbedContent />
+    </Suspense>
   )
 }

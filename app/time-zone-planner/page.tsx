@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,7 +32,7 @@ import {
  * Time Zone Meeting Planner - Main tool page
  * Refactored for better reliability and user experience
  */
-export default function TimeZonePlanner() {
+function TimeZonePlannerContent() {
   const searchParams = useSearchParams()
   const { toast } = useToast()
 

@@ -86,7 +86,7 @@ export default function DiscordTimestampGenerator() {
   const parseWithChrono = (input: string): Date | null => {
     try {
       const isUS = (navigator.language || "en-US").startsWith("en-US")
-      const parser = isUS ? chrono.en : (chrono as any).en_GB || chrono.en
+      const parser = chrono.en
       const results = parser.parse(input, new Date())
       if (!results || results.length === 0) return null
       return results[0].start.date()

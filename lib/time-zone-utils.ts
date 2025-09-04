@@ -3,7 +3,7 @@
  * Handles timezone calculations, slot generation, and meeting time finding
  */
 
-export type TimeZoneId = string // e.g., "America/New_York"
+  export type TimeZoneId = string // e.g., "America/New_York"
 
 export interface Participant {
   id: string
