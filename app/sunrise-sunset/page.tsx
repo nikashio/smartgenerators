@@ -7,12 +7,14 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { searchCities, getFeaturedCities, formatCityName, type City } from "@/lib/cities"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SiteHeader } from "@/components/ui/site-header"
 import FeedbackForm from "@/components/ui/feedback-form"
+import ToolHeader from "@/components/ui/tool-header"
 
 export default function SunriseSunsetPage() {
   const [query, setQuery] = useState("")
@@ -37,7 +39,7 @@ export default function SunriseSunsetPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
-      <SiteHeader />
+      <ToolHeader />
 
       <main className="mx-auto max-w-4xl px-4 py-8">
         {/* Hero Section */}
@@ -179,6 +181,90 @@ export default function SunriseSunsetPage() {
         <section className="mt-12">
           <FeedbackForm toolName="Sunrise & Sunset Calculator" defaultCollapsed={true} />
         </section>
+
+        {/* Call-to-Action Footer */}
+        <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              More Planning Tools
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              While you're planning around sunrise and sunset times, you might also need these other tools for your events and schedules.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Link
+              href="/add-to-calendar"
+              className="block p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">📅</span>
+                <span className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  Add to Calendar
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Shareable event links
+              </p>
+            </Link>
+
+            <Link
+              href="/countdown"
+              className="block p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">⏰</span>
+                <span className="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">
+                  Countdown Timer
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Event countdowns
+              </p>
+            </Link>
+
+            <Link
+              href="/time-zone-planner"
+              className="block p-4 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-lg hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">🌍</span>
+                <span className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                  Time Zone Planner
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Multi-timezone events
+              </p>
+            </Link>
+
+            <Link
+              href="/chat-link-generator"
+              className="block p-4 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">💬</span>
+                <span className="font-semibold text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400">
+                  WhatsApp Link
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Quick messaging
+              </p>
+            </Link>
+          </div>
+
+          <div className="text-center mt-8">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all font-medium shadow-md hover:shadow-lg"
+            >
+              <span className="text-lg">🏠</span>
+              <span>Explore All Tools</span>
+            </Link>
+          </div>
+        </div>
       </main>
     </div>
   )

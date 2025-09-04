@@ -18,6 +18,7 @@ import CitySelectNB from "@/components/nb/city-select-nb"
 import { useToast } from "@/hooks/use-toast"
 import { CalendarDays, Clock, Users, Share2, Plus, X, AlertCircle, CheckCircle, Sun, Moon } from "lucide-react"
 import FeedbackForm from "@/components/ui/feedback-form"
+import ToolHeader from "@/components/ui/tool-header"
 import {
   Participant,
   PlannerState,
@@ -334,6 +335,7 @@ function TimeZonePlannerContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
+      <ToolHeader />
       {/* Header */}
       <header className="border-b border-gray-200/50 bg-white/80 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/80">
         <div className="mx-auto max-w-7xl px-4 py-6">

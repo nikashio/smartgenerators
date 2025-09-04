@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import FeedbackForm from "@/components/ui/feedback-form"
+import ToolHeader from "@/components/ui/tool-header"
 
 /**
  * Chat Link Generator - Multi-app link generator for WhatsApp, Telegram, Messenger, and Discord
@@ -271,8 +272,8 @@ export default function ChatLinkGenerator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
+      <ToolHeader />
       <div className="mx-auto max-w-5xl px-4 py-12">
-        <Header />
         <main>
           <TabNavigation />
 

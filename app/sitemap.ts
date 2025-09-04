@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getAllEventSlugs } from '@/lib/seasonal-events'
-import { getFeaturedCities } from '@/lib/cities'
+import { getFeaturedCities, getTopCitiesForSitemap } from '@/lib/cities'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://smartgenerators.dev'
@@ -89,13 +89,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  // Sunrise sunset city pages
-  const sunriseSunsetPages = getFeaturedCities().map((city) => ({
+  // Sunrise sunset city pages - Featured cities (high priority)
+  const featuredSunriseSunsetPages = getFeaturedCities().map((city) => ({
     url: `${baseUrl}/sunrise-sunset/${city.slug}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.8,
   }))
 
-  return [...staticPages, ...countdownPages, ...sunriseSunsetPages]
+  // Additional top cities by population (medium priority)
+  const topCitiesPages = getTopCitiesForSitemap()
+    .filter(city => !getFeaturedCities().some(featured => featured.slug === city.slug))
+    .map((city) => ({
+      url: `${baseUrl}/sunrise-sunset/${city.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }))
+
+  return [...staticPages, ...countdownPages, ...featuredSunriseSunsetPages, ...topCitiesPages]
 }

@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast"
 import { generateCalendarLinks } from "@/lib/calendar-links"
 import { generateIcs, downloadIcs, generateIcsFilename } from "@/lib/ics-generator"
 import FeedbackForm from "@/components/ui/feedback-form"
+import ToolHeader from "@/components/ui/tool-header"
 
 /**
  * Add-to-Calendar Link Generator - Create calendar links and downloadable .ics files
@@ -444,6 +445,7 @@ export default function AddToCalendarGenerator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
+      <ToolHeader />
       <div className="mx-auto max-w-6xl px-4 py-12">
         {/* Header */}
         <header className="relative mb-12 text-center">

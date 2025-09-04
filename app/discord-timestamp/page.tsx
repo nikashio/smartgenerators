@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import * as chrono from "chrono-node"
 import FeedbackForm from "@/components/ui/feedback-form"
+import ToolHeader from "@/components/ui/tool-header"
 
 /**
  * Minimal, mobile-first UI for Discord timestamp generation and snowflake decoding.
@@ -1038,6 +1039,7 @@ export default function DiscordTimestampGenerator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
+      <ToolHeader />
       <div className="mx-auto max-w-5xl px-4 py-12">
         <header className="mb-12 text-center">
           <div className="mb-6">
@@ -1079,21 +1081,6 @@ export default function DiscordTimestampGenerator() {
             </div>
           </div>
           
-          <div className="absolute top-8 right-8">
-            <button
-              onClick={toggleTheme}
-              className="h-10 w-10 rounded-full border border-gray-200/50 bg-white/80 text-sm backdrop-blur-sm transition-all hover:bg-gray-50 hover:shadow-md dark:border-gray-700/50 dark:bg-gray-900/80 dark:hover:bg-gray-800"
-              aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-              title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-            >
-              <span className="sr-only">{isDarkMode ? "Switch to light mode" : "Switch to dark mode"}</span>
-              {isDarkMode ? (
-                <span className="block h-full w-full p-2" role="img" aria-hidden="true">🌙</span>
-              ) : (
-                <span className="block h-full w-full p-2" role="img" aria-hidden="true">☀️</span>
-              )}
-            </button>
-          </div>
         </header>
 
         <main>
