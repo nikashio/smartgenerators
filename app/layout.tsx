@@ -32,11 +32,20 @@ export const metadata: Metadata = {
     title: "Smart Generators – Free Online Tools for Discord, WhatsApp & More",
     description: "Hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
     siteName: "Smart Generators",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1024,
+        height: 1024,
+        alt: "Smart Generators Logo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Smart Generators – Free Online Tools for Discord, WhatsApp & More",
     description: "Hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
+    images: ["/logo.png"],
   },
   alternates: {
     canonical: "https://smartgenerators.dev",
@@ -49,21 +58,6 @@ export const metadata: Metadata = {
     ],
     apple: "/logo.png",
     shortcut: "/favicon.ico",
-  },
-  openGraph: {
-    ...metadata.openGraph,
-    images: [
-      {
-        url: "/logo.png",
-        width: 1024,
-        height: 1024,
-        alt: "Smart Generators Logo",
-      },
-    ],
-  },
-  twitter: {
-    ...metadata.twitter,
-    images: ["/logo.png"],
   },
 }
 
