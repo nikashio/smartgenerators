@@ -42,9 +42,29 @@ export const metadata: Metadata = {
     canonical: "https://smartgenerators.dev",
   },
   icons: {
-    icon: "/logo.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16", type: "image/x-icon" },
+      { url: "/logo.svg", sizes: "any", type: "image/svg+xml" },
+      { url: "/logo.png", sizes: "512x512", type: "image/png" },
+    ],
     apple: "/logo.png",
-  }
+    shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    ...metadata.openGraph,
+    images: [
+      {
+        url: "/logo.png",
+        width: 1024,
+        height: 1024,
+        alt: "Smart Generators Logo",
+      },
+    ],
+  },
+  twitter: {
+    ...metadata.twitter,
+    images: ["/logo.png"],
+  },
 }
 
 export default function RootLayout({

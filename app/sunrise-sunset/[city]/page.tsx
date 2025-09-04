@@ -565,7 +565,7 @@ export default async function CityPage({ params }: PageProps) {
                 🌍 Nearby Cities
               </h2>
               <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Explore sunrise and sunset times in cities near {city.name}
+                Explore sunrise and sunset times in cities near {city.name}.
               </p>
             </div>
 
@@ -576,17 +576,12 @@ export default async function CityPage({ params }: PageProps) {
                   href={`/sunrise-sunset/${nearbyCity.slug}`}
                   className="block p-4 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-lg hover:shadow-md transition-all group border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600"
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-2xl">🏙️</span>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                        {nearbyCity.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {nearbyCity.country}
-                      </p>
-                    </div>
-                  </div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 mb-1">
+                    {nearbyCity.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    {nearbyCity.country}
+                  </p>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
                     Check sunrise & sunset times
                   </p>
