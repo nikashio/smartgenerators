@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     siteName: "Smart Generators",
     images: [
       {
-        url: "https://smartgenerators.dev/og-add-to-calendar.png",
+        url: "https://smartgenerators.dev/placeholder.jpg",
         width: 1200,
         height: 630,
         alt: "Add to Calendar Link Generator",
@@ -50,11 +50,15 @@ export const metadata: Metadata = {
     title: "Add to Calendar Link Generator – Google, Outlook, Apple | Free Tool",
     description:
       "Generate Google/Outlook/Yahoo links and .ics files with recurrence and reminders.",
-    images: ["https://smartgenerators.dev/og-add-to-calendar.png"],
+    images: ["https://smartgenerators.dev/placeholder.jpg"],
   },
   alternates: {
     canonical: "https://smartgenerators.dev/add-to-calendar",
   },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  }
 }
 
 export default function AddToCalendarLayout({

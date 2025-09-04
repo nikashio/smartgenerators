@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "Smart Generators",
     images: [
       {
-        url: "https://smartgenerators.dev/og-countdown-view.png",
+        url: "https://smartgenerators.dev/placeholder.jpg",
         width: 1200,
         height: 630,
         alt: "Countdown Timer View - Live Display",
@@ -49,11 +49,15 @@ export const metadata: Metadata = {
     title: "Countdown Timer View – Shareable Live Countdown Display",
     description:
       "View live countdown timers from shared links. Clean, distraction-free countdown display.",
-    images: ["https://smartgenerators.dev/og-countdown-view.png"],
+    images: ["https://smartgenerators.dev/placeholder.jpg"],
   },
   alternates: {
     canonical: "https://smartgenerators.dev/countdown/view",
   },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  }
 }
 
 export default function CountdownViewLayout({

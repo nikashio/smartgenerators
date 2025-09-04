@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "Smart Generators",
     images: [
       {
-        url: "https://smartgenerators.dev/og-countdown-embed.png",
+        url: "https://smartgenerators.dev/placeholder.jpg",
         width: 1200,
         height: 630,
         alt: "Countdown Timer Embed Widget",
@@ -49,11 +49,15 @@ export const metadata: Metadata = {
     title: "Countdown Timer Embed Widget – Embeddable Countdown for Websites",
     description:
       "Embeddable countdown timer widget for websites. Lightweight 360x200px iframe widget.",
-    images: ["https://smartgenerators.dev/og-countdown-embed.png"],
+    images: ["https://smartgenerators.dev/placeholder.jpg"],
   },
   alternates: {
     canonical: "https://smartgenerators.dev/countdown/embed",
   },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  }
 }
 
 export default function CountdownEmbedLayout({

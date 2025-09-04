@@ -40,6 +40,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://smartgenerators.dev",
+  },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
   }
 }
 
@@ -60,6 +64,7 @@ export default function RootLayout({
               name: "Smart Generators",
               description: "Hub of free, privacy-first online tools for everyday problems",
               url: "https://smartgenerators.dev",
+              logo: "https://smartgenerators.dev/logo.png",
               potentialAction: {
                 "@type": "SearchAction",
                 target: {
