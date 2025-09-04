@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import * as chrono from "chrono-node"
+import FeedbackForm from "@/components/ui/feedback-form"
 
 /**
  * Minimal, mobile-first UI for Discord timestamp generation and snowflake decoding.
@@ -1404,6 +1405,11 @@ export default function DiscordTimestampGenerator() {
         </details>
         </section>
         
+        {/* Feedback Section */}
+        <section className="mt-12">
+          <FeedbackForm toolName="Discord Timestamp Generator" defaultCollapsed={true} />
+        </section>
+
         {/* Footer */}
         <footer className="mt-12 rounded-3xl border border-gray-200/50 bg-white/80 p-6 shadow-xl shadow-gray-900/5 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20">
           <div className="space-y-4 text-center">

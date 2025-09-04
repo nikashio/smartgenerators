@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SiteHeader } from "@/components/ui/site-header"
+import FeedbackForm from "@/components/ui/feedback-form"
 
 export default function SunriseSunsetPage() {
   const [query, setQuery] = useState("")
@@ -173,6 +174,11 @@ export default function SunriseSunsetPage() {
             </p>
           </div>
         </div>
+
+        {/* Feedback Section */}
+        <section className="mt-12">
+          <FeedbackForm toolName="Sunrise & Sunset Calculator" defaultCollapsed={true} />
+        </section>
       </main>
     </div>
   )

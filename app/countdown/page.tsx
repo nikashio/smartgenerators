@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
+import FeedbackForm from "@/components/ui/feedback-form"
 
 /**
  * Countdown Timer Generator - Create shareable countdown timers for events
@@ -1403,6 +1404,11 @@ export default function CountdownGenerator() {
             </section>
           </div>
         </main>
+
+        {/* Feedback Section */}
+        <section className="mt-12">
+          <FeedbackForm toolName="Countdown Timer Generator" defaultCollapsed={true} />
+        </section>
 
         {/* Footer */}
         <footer className="mt-12 rounded-3xl border border-gray-200/50 bg-white/80 p-6 shadow-xl shadow-gray-900/5 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20">

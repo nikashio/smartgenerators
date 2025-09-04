@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
+import FeedbackForm from "@/components/ui/feedback-form"
 
 /**
  * Chat Link Generator - Multi-app link generator for WhatsApp, Telegram, Messenger, and Discord
@@ -285,6 +286,11 @@ export default function ChatLinkGenerator() {
 
           {/* SEO Content Sections */}
           <SEOContent />
+
+          {/* Feedback Section */}
+          <div className="mt-12">
+            <FeedbackForm toolName="Chat Link Generator" defaultCollapsed={true} />
+          </div>
 
           {/* Footer */}
           <Footer />

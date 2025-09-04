@@ -17,6 +17,7 @@ import { NBCard, NBCardContent, NBCardHeader, NBCardTitle } from "@/components/n
 import CitySelectNB from "@/components/nb/city-select-nb"
 import { useToast } from "@/hooks/use-toast"
 import { CalendarDays, Clock, Users, Share2, Plus, X, AlertCircle, CheckCircle, Sun, Moon } from "lucide-react"
+import FeedbackForm from "@/components/ui/feedback-form"
 import {
   Participant,
   PlannerState,
@@ -506,6 +507,11 @@ function TimeZonePlannerContent() {
             </NBCardContent>
           </NBCard>
         </div>
+
+        {/* Feedback Section */}
+        <section className="mt-12">
+          <FeedbackForm toolName="Time Zone Meeting Planner" defaultCollapsed={true} />
+        </section>
       </main>
     </div>
   )

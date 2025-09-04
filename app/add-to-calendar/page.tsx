@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { generateCalendarLinks } from "@/lib/calendar-links"
 import { generateIcs, downloadIcs, generateIcsFilename } from "@/lib/ics-generator"
+import FeedbackForm from "@/components/ui/feedback-form"
 
 /**
  * Add-to-Calendar Link Generator - Create calendar links and downloadable .ics files
@@ -1075,8 +1076,13 @@ export default function AddToCalendarGenerator() {
             </div>
           </section>
 
-          {/* Footer */}
-          <footer className="mt-12 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                  {/* Feedback Section */}
+        <section className="mt-12">
+          <FeedbackForm toolName="Add to Calendar Link Generator" defaultCollapsed={true} />
+        </section>
+
+        {/* Footer */}
+        <footer className="mt-12 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
             <div className="space-y-4 text-center">
               <div className="flex flex-wrap justify-center gap-4 text-sm">
                 <a

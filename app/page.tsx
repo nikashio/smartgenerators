@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { seasonalEvents } from "@/lib/seasonal-events"
+import FeedbackForm from "@/components/ui/feedback-form"
 
 /**
  * Homepage - Hub of free online tools for everyday problems
@@ -64,6 +65,13 @@ export default function Home() {
         
         {/* FAQ Section */}
         <FAQSection />
+
+        {/* Feedback Section */}
+        <section className="py-16">
+          <div className="mx-auto max-w-4xl px-4">
+            <FeedbackForm toolName="Smart Generators" defaultCollapsed={true} />
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
