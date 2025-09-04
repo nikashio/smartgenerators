@@ -4,7 +4,7 @@ import { Metadata } from "next"
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: "Time Zone Meeting Planner – Schedule Across Time Zones | Free Tool",
+  title: "Time Zone Meeting Planner – Schedule Across Time Zones | Free",
   description:
     "Free time zone meeting planner. Find overlapping meeting times across multiple time zones, share schedules, and add to calendar – privacy-first tool.",
   keywords: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Time Zone Meeting Planner – Schedule Across Time Zones | Free Tool",
+    title: "Time Zone Meeting Planner – Schedule Across Time Zones | Free",
     description:
       "Find the best meeting times across multiple time zones. 100% free and browser-based.",
     url: "https://smartgenerators.dev/time-zone-planner",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Time Zone Meeting Planner – Schedule Across Time Zones | Free Tool",
+    title: "Time Zone Meeting Planner – Schedule Across Time Zones | Free",
     description:
       "Schedule meetings across multiple time zones with ease.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],

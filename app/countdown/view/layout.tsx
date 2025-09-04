@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Countdown Timer View – Shareable Live Countdown Display | Smart Generators",
+  title: "Countdown Timer View – Shareable Live Display",
   description:
     "View live countdown timers from shared links. Clean, distraction-free countdown display perfect for events, launches, and deadlines.",
   keywords: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Countdown Timer View – Shareable Live Countdown Display",
+    title: "Countdown Timer View – Shareable Live Display",
     description:
       "View live countdown timers from shared links. Clean, distraction-free countdown display.",
     url: "https://smartgenerators.dev/countdown/view",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Countdown Timer View – Shareable Live Countdown Display",
+    title: "Countdown Timer View – Shareable Live Display",
     description:
       "View live countdown timers from shared links. Clean, distraction-free countdown display.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],

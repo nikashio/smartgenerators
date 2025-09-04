@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  const title = `Countdown to ${event.name} ${event.emoji} – Free Online Timer`
+  const title = `Countdown to ${event.name} ${event.emoji} – Free Timer`
   const description = event.metaDescription
   const url = `https://smartgenerators.dev/countdown/${event.slug}`
 
@@ -29,7 +29,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     creator: "Smart Generators",
     publisher: "Smart Generators",
     robots: "index, follow",
-    canonical: url,
     openGraph: {
       title,
       description,

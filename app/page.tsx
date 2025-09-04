@@ -211,6 +211,16 @@ function ToolsGrid() {
       color: "cyan",
       category: "Productivity",
       features: ["Multi-timezone scheduling", "Shareable links", "Calendar integration"]
+    },
+    {
+      id: "sunrise-sunset",
+      title: "Sunrise & Sunset Calculator",
+      description: "Get precise sunrise, sunset, and golden hour times for any city. Download calendar files or subscribe to daily updates.",
+      href: "/sunrise-sunset",
+      icon: "🌅",
+      color: "orange",
+      category: "Productivity",
+      features: ["Global city support", "Golden hour times", "Calendar export"]
     }
   ]
 
@@ -283,6 +293,8 @@ function ToolsGrid() {
                     ? 'from-cyan-100 to-blue-100 dark:from-cyan-900/30 dark:to-blue-900/30'
                     : tool.color === 'indigo'
                     ? 'from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30'
+                    : tool.color === 'orange'
+                    ? 'from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30'
                     : 'from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30'
                 }`}>
                   <span className="text-2xl">{tool.icon}</span>
@@ -311,6 +323,8 @@ function ToolsGrid() {
                           ? 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300'
                           : tool.color === 'indigo'
                           ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                          : tool.color === 'orange'
+                          ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
                           : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
                       }`}
                     >
@@ -332,6 +346,8 @@ function ToolsGrid() {
                       ? 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700'
                       : tool.color === 'indigo'
                       ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
+                      : tool.color === 'orange'
+                      ? 'bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700'
                       : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                   }`}
                 >
@@ -670,6 +686,9 @@ function Footer() {
               </Link>
               <Link href="/time-zone-planner" className="block text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
                 Time Zone Meeting Planner
+              </Link>
+              <Link href="/sunrise-sunset" className="block text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+                Sunrise & Sunset Calculator
               </Link>
             </div>
           </div>

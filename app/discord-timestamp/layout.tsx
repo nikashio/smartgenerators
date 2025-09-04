@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Discord Timestamp Generator – Create Dynamic Time Displays | Free Tool",
+  title: "Discord Timestamp Generator – Dynamic Time Displays | Free",
   description:
     "Free Discord timestamp generator – create dynamic timestamps that show relative time (like '2 minutes ago') or exact dates. Perfect for events, reminders, and scheduling in Discord servers.",
   keywords: [
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Discord Timestamp Generator – Create Dynamic Time Displays | Free Tool",
+    title: "Discord Timestamp Generator – Dynamic Time Displays | Free",
     description:
       "Free Discord timestamp generator – create dynamic timestamps that show relative time (like '2 minutes ago') or exact dates. Perfect for events, reminders, and scheduling in Discord servers.",
     url: "https://smartgenerators.dev/discord-timestamp",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Discord Timestamp Generator – Create Dynamic Time Displays | Free Tool",
+    title: "Discord Timestamp Generator – Dynamic Time Displays | Free",
     description:
       "Free Discord timestamp generator – create dynamic timestamps that show relative time (like '2 minutes ago') or exact dates. Perfect for events, reminders, and scheduling in Discord servers.",
     images: ["https://smartgenerators.dev/og-discord-timestamp.png"],

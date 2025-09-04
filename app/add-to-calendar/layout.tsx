@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Add to Calendar Link Generator – Google, Outlook, Apple | Free Tool",
+  title: "Add to Calendar Generator – Google, Outlook, Apple | Free",
   description:
     "Free Add to Calendar link generator. Create Google, Outlook, Yahoo links and downloadable .ics files with reminders, attendees, and recurrence – privacy-first.",
   keywords: [
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Add to Calendar Link Generator – Google, Outlook, Apple | Free Tool",
+    title: "Add to Calendar Generator – Google, Outlook, Apple | Free",
     description:
       "Create multi-calendar links and .ics files with reminders and recurrence. 100% free and browser-based.",
     url: "https://smartgenerators.dev/add-to-calendar",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Add to Calendar Link Generator – Google, Outlook, Apple | Free Tool",
+    title: "Add to Calendar Generator – Google, Outlook, Apple | Free",
     description:
       "Generate Google/Outlook/Yahoo links and .ics files with recurrence and reminders.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],

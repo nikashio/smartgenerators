@@ -5,7 +5,7 @@ import { Metadata } from "next"
  * Provides metadata for shared planner links
  */
 export const metadata: Metadata = {
-  title: "Shared Meeting Planner – Time Zone Meeting Planner | Smart Generators",
+  title: "Shared Meeting Planner – Time Zone Scheduler",
   description:
     "View shared meeting times across multiple time zones. Find the perfect meeting time for your team.",
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Shared Meeting Planner – Time Zone Meeting Planner",
+    title: "Shared Meeting Planner – Time Zone Scheduler",
     description:
       "View shared meeting times across multiple time zones.",
     url: "https://smartgenerators.dev/time-zone-planner/view",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shared Meeting Planner – Time Zone Meeting Planner",
+    title: "Shared Meeting Planner – Time Zone Scheduler",
     description:
       "View shared meeting times across multiple time zones.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],

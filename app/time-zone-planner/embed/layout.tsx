@@ -5,7 +5,7 @@ import { Metadata } from "next"
  * Provides metadata for embeddable planner widget
  */
 export const metadata: Metadata = {
-  title: "Meeting Planner Widget – Time Zone Meeting Planner | Smart Generators",
+  title: "Meeting Planner Widget – Time Zone Scheduler",
   description:
     "Embeddable meeting planner widget for websites. Show meeting times across time zones.",
   keywords: [

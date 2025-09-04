@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import type React from "react"
 
 export const metadata: Metadata = {
-  title: "WhatsApp Link Generator (Click to Chat) – Telegram, Messenger & Discord | Free Tool",
+  title: "Chat Link Generator – WhatsApp, Telegram, Messenger, Discord | Free",
   description:
     "Free WhatsApp link generator – create click‑to‑chat links for WhatsApp, Telegram, Messenger and Discord with QR codes, no signup required. Generate messaging links instantly.",
   keywords: [
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   publisher: "Smart Generators",
   robots: "index, follow",
   openGraph: {
-    title: "WhatsApp Link Generator (Click to Chat) – Telegram, Messenger & Discord | Free Tool",
+    title: "Chat Link Generator – WhatsApp, Telegram, Messenger, Discord | Free",
     description:
       "Free WhatsApp link generator – create click‑to‑chat links for WhatsApp, Telegram, Messenger and Discord with QR codes, no signup required.",
     type: "website",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "WhatsApp Link Generator (Click to Chat) – Telegram, Messenger & Discord | Free Tool",
+    title: "Chat Link Generator – WhatsApp, Telegram, Messenger, Discord | Free",
     description:
       "Free WhatsApp link generator – create click‑to‑chat links for WhatsApp, Telegram, Messenger and Discord with QR codes, no signup required.",
     images: ["https://smartgenerators.dev/og-chat-link-generator.png"],

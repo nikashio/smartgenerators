@@ -5,7 +5,7 @@ import type { Metadata } from "next"
  * Handles SEO metadata for the article
  */
 export const metadata: Metadata = {
-  title: "WhatsApp Link Generator (Click to Chat) + QR Code — Free, No Signup",
+  title: "WhatsApp Click-to-Chat Links + QR Code Generator | Free",
   description: "Create WhatsApp click-to-chat links and QR codes in seconds. Auto-format phone numbers, prefill messages, and track campaigns. Free tool, no signup.",
   alternates: {
     canonical: "https://smartgenerators.dev/blog/whatsapp-link-generator-click-to-chat-guide"
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "article",
     url: "https://smartgenerators.dev/blog/whatsapp-link-generator-click-to-chat-guide",
-    title: "WhatsApp Link Generator (Click to Chat) + QR Code — Free",
+    title: "WhatsApp Click-to-Chat Links + QR Code Generator | Free",
     description: "Build WhatsApp links and QR codes in seconds. No signup.",
     images: [
       {
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "WhatsApp Link Generator (Click to Chat) + QR Code — Free",
+    title: "WhatsApp Click-to-Chat Links + QR Code Generator | Free",
     description: "Build WhatsApp links and QR codes in seconds. No signup.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],
   }

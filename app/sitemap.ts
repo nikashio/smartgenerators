@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getAllEventSlugs } from '@/lib/seasonal-events'
+import { getFeaturedCities } from '@/lib/cities'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://smartgenerators.dev'
@@ -72,6 +73,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/sunrise-sunset`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
   ]
 
   // Dynamic countdown pages
@@ -82,5 +89,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  return [...staticPages, ...countdownPages]
+  // Sunrise sunset city pages
+  const sunriseSunsetPages = getFeaturedCities().map((city) => ({
+    url: `${baseUrl}/sunrise-sunset/${city.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }))
+
+  return [...staticPages, ...countdownPages, ...sunriseSunsetPages]
 }

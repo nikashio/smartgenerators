@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Countdown Timer Embed Widget – Embeddable Countdown for Websites | Smart Generators",
+  title: "Countdown Embed Widget – Embeddable Timer for Websites",
   description:
     "Embeddable countdown timer widget for websites. Lightweight 360x200px iframe widget with customizable themes. Perfect for events, launches, and deadlines.",
   keywords: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Countdown Timer Embed Widget – Embeddable Countdown for Websites",
+    title: "Countdown Embed Widget – Embeddable Timer for Websites",
     description:
       "Embeddable countdown timer widget for websites. Lightweight 360x200px iframe widget with customizable themes.",
     url: "https://smartgenerators.dev/countdown/embed",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Countdown Timer Embed Widget – Embeddable Countdown for Websites",
+    title: "Countdown Embed Widget – Embeddable Timer for Websites",
     description:
       "Embeddable countdown timer widget for websites. Lightweight 360x200px iframe widget.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],

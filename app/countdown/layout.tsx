@@ -5,7 +5,7 @@ import type { Metadata } from "next"
  * Handles metadata for the countdown timer tool
  */
 export const metadata: Metadata = {
-  title: "Countdown Timer Generator – Free Online Countdown & Embeddable Widget",
+  title: "Countdown Timer Generator – Free Online Timer & Widget",
   description: "Create a free countdown timer for events, launches, exams, or streams. Shareable link, embeddable widget, no signup required.",
   keywords: [
     "countdown timer",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://smartgenerators.dev/countdown",
-    title: "Countdown Timer Generator – Free Online Countdown & Embeddable Widget",
+    title: "Countdown Timer Generator – Free Online Timer & Widget",
     description: "Create a free countdown timer for events, launches, exams, or streams. Shareable link, embeddable widget, no signup required.",
     siteName: "Smart Generators",
     images: [
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Countdown Timer Generator – Free Online Countdown & Embeddable Widget",
+    title: "Countdown Timer Generator – Free Online Timer & Widget",
     description: "Create a free countdown timer for events, launches, exams, or streams. Shareable link, embeddable widget, no signup required.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],
   },

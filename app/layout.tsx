@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] })
  * Provides global font and CSS configuration
  */
 export const metadata: Metadata = {
-  title: "Smart Generators – Free Online Tools (Discord Timestamps, WhatsApp Links, and More)",
+  title: "Smart Generators – Free Online Tools for Discord, WhatsApp & More",
   description: "Smart Generators is a hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
   keywords: [
     "free online tools",
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://smartgenerators.dev",
-    title: "Smart Generators – Free Online Tools",
+    title: "Smart Generators – Free Online Tools for Discord, WhatsApp & More",
     description: "Hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
     siteName: "Smart Generators",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Smart Generators – Free Online Tools",
+    title: "Smart Generators – Free Online Tools for Discord, WhatsApp & More",
     description: "Hub of free, privacy-first online tools like Discord Timestamp Generator and WhatsApp Link Generator. No signup, no ads.",
   },
   alternates: {

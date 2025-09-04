@@ -32,6 +32,7 @@
     "react-day-picker": "9.8.0",
     "react-dom": "^19",
     "sonner": "^1.7.4",
+    "suncalc": "1.9.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
   },
