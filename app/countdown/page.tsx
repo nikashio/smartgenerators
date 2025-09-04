@@ -280,6 +280,33 @@ export default function CountdownGenerator() {
     })
   }
 
+  // Reset all advanced settings to defaults
+  const resetToDefaults = () => {
+    setStyle("horizontal")
+    setSize("medium")
+    setCornerRadius("medium")
+    setTextColor("#ffffff")
+    setBackgroundColor("#000000")
+    setIsReflective(false)
+    setIsTransparent(false)
+    setShowTenths(false)
+    setHideDateTitle(false)
+    setCountUp(false)
+    setTextAlignment("center")
+    setTextEffect("none")
+    setLanguage("en")
+    setRepeatOption("none")
+    setShowDays(true)
+    setShowHours(true)
+    setShowMinutes(true)
+    setShowSeconds(true)
+    
+    // Regenerate shareable link if countdown is active
+    if (isCountdownActive) {
+      setTimeout(() => generateShareableLink(), 100)
+    }
+  }
+
   // Generate shareable link
   const generateShareableLink = () => {
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://smartgenerators.dev'
@@ -564,6 +591,19 @@ export default function CountdownGenerator() {
                     ⚙️ Advanced Configuration
                   </summary>
                   <div className="mt-4 space-y-6 border-t border-gray-200/50 pt-4 dark:border-gray-700/50">
+                    
+                    {/* Reset Button */}
+                    <div className="flex justify-end">
+                      <button
+                        onClick={resetToDefaults}
+                        className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Reset to Default
+                      </button>
+                    </div>
                     
                     {/* Style & Layout */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1156,8 +1196,8 @@ export default function CountdownGenerator() {
                       <h3 className="font-semibold text-blue-900 dark:text-blue-100">Shareable Link</h3>
                     </div>
                     <div className="flex gap-2">
-                      <div className="flex-1 rounded-lg border border-blue-200 bg-white/80 px-3 py-2.5 dark:border-blue-700/50 ">
-                        <code className="block break-all text-sm text-gray-700 dark:text-gray-300">
+                      <div className="flex-1 rounded-lg border border-blue-200 bg-white/80 px-3 py-2.5 dark:border-blue-700/50 dark:bg-gray-800/80">
+                        <code className="block break-all text-sm text-gray-900 dark:text-gray-100">
                           {generatedLink}
                         </code>
                       </div>
@@ -1201,8 +1241,8 @@ export default function CountdownGenerator() {
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      <div className="flex-1 rounded-lg border border-purple-200 bg-white/80 p-3 dark:border-purple-700/50 ">
-                        <code className="block break-all text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                      <div className="flex-1 rounded-lg border border-purple-200 bg-white/80 p-3 dark:border-purple-700/50 dark:bg-gray-800/80">
+                        <code className="block break-all text-sm leading-relaxed text-gray-900 dark:text-gray-100">
                           {embedCode}
                         </code>
                       </div>

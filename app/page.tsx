@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { seasonalEvents } from "@/lib/seasonal-events"
 
 /**
  * Homepage - Hub of free online tools for everyday problems
@@ -51,6 +52,9 @@ export default function Home() {
         
         {/* Tools Grid */}
         <ToolsGrid />
+        
+        {/* Seasonal Countdowns */}
+        <SeasonalCountdowns />
         
         {/* Blog Section */}
         <BlogSection />
@@ -261,6 +265,89 @@ function ToolsGrid() {
               </Link>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Seasonal Countdowns Component
+function SeasonalCountdowns() {
+  // Show only the next 6 upcoming events
+  const upcomingEvents = seasonalEvents
+    .filter(event => new Date(event.date) > new Date())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 6)
+
+  if (upcomingEvents.length === 0) return null
+
+  return (
+    <section className="py-16">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
+            Popular Countdowns
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Track time to upcoming holidays and events
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {upcomingEvents.map((event) => (
+            <Link
+              key={event.id}
+              href={`/countdown/${event.slug}`}
+              className="group relative overflow-hidden rounded-2xl border border-gray-200/50 bg-white/80 p-6 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:shadow-xl dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20"
+            >
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">{event.emoji}</span>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {event.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {new Date(event.date).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  event.color === 'red' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' :
+                  event.color === 'purple' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
+                  event.color === 'gray' ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300' :
+                  event.color === 'blue' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                  event.color === 'orange' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' :
+                  event.color === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
+                  event.color === 'amber' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' :
+                  'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300'
+                }`}>
+                  Free Countdown
+                </span>
+                
+                <svg className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-blue-600 dark:group-hover:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            href="/countdown"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 font-semibold text-white transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg"
+          >
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+            </svg>
+            Create Custom Countdown
+          </Link>
         </div>
       </div>
     </section>
