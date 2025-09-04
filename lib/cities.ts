@@ -186,10 +186,10 @@ export function getFeaturedCities(): City[] {
 export function getTopCitiesForSitemap(): City[] {
   const cities = getAllCities()
   
-  // Get top 100 cities by population for sitemap
+  // Get top 500 cities by population for sitemap
   return cities
     .sort((a, b) => b.population - a.population)
-    .slice(0, 100)
+    .slice(0, 500)
 }
 
 /**
