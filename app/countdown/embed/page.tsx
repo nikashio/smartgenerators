@@ -98,6 +98,9 @@ export default function CountdownEmbed() {
   return (
     <div className={`h-[200px] w-[360px] overflow-hidden rounded-xl border border-gray-200/50 bg-white shadow-lg ${themeMode === "dark" ? "dark" : ""} dark:border-gray-700/50 dark:bg-gray-900`}>
       <div className="flex h-full flex-col justify-center p-4">
+        {!eventName && !isCountdownActive && (
+          <h1 className="sr-only">Embeddable Countdown Timer Widget</h1>
+        )}
         {/* Event Name */}
         {eventName && (
           <h3 className="mb-3 text-center text-lg font-semibold text-gray-900 dark:text-white">

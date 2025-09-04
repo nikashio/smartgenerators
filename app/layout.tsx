@@ -94,6 +94,32 @@ export default function RootLayout({
                     price: "0",
                     priceCurrency: "USD"
                   }
+                },
+                {
+                  "@type": "SoftwareApplication",
+                  name: "Add to Calendar Link Generator",
+                  description: "Create calendar links and downloadable .ics files for Google, Outlook, Apple Calendar, and more",
+                  url: "https://smartgenerators.dev/add-to-calendar",
+                  applicationCategory: "UtilitiesApplication",
+                  operatingSystem: "Any",
+                  offers: {
+                    "@type": "Offer",
+                    price: "0",
+                    priceCurrency: "USD"
+                  }
+                },
+                {
+                  "@type": "SoftwareApplication",
+                  name: "Countdown Timer Generator",
+                  description: "Create free countdown timers for events, launches, exams, or streams with shareable links",
+                  url: "https://smartgenerators.dev/countdown",
+                  applicationCategory: "UtilitiesApplication",
+                  operatingSystem: "Any",
+                  offers: {
+                    "@type": "Offer",
+                    price: "0",
+                    priceCurrency: "USD"
+                  }
                 }
               ]
             })

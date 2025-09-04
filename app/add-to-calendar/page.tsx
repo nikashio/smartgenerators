@@ -55,13 +55,13 @@ const RECURRENCE_FREQS = [
 ]
 
 const DAYS_OF_WEEK = [
-  { value: "MO", label: "Mon" },
-  { value: "TU", label: "Tue" },
-  { value: "WE", label: "Wed" },
-  { value: "TH", label: "Thu" },
-  { value: "FR", label: "Fri" },
-  { value: "SA", label: "Sat" },
-  { value: "SU", label: "Sun" },
+  { value: "MO" as const, label: "Mon" },
+  { value: "TU" as const, label: "Tue" },
+  { value: "WE" as const, label: "Wed" },
+  { value: "TH" as const, label: "Thu" },
+  { value: "FR" as const, label: "Fri" },
+  { value: "SA" as const, label: "Sat" },
+  { value: "SU" as const, label: "Sun" },
 ]
 
 // Reminder options
@@ -102,7 +102,7 @@ export default function AddToCalendarGenerator() {
   const [icsContent, setIcsContent] = useState("")
   const [hasGenerated, setHasGenerated] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
-  const [newReminder, setNewReminder] = useState({ amount: 15, unit: "minute" as const })
+  const [newReminder, setNewReminder] = useState<{ amount: number; unit: "minute" | "hour" | "day" }>({ amount: 15, unit: "minute" })
   const [attendeesText, setAttendeesText] = useState("")
 
   const { toast } = useToast()
@@ -142,8 +142,8 @@ export default function AddToCalendarGenerator() {
         end: localDateTime(tomorrowPlusHour),
       }))
 
-      // Add structured data
-      const structuredData = {
+      // Add structured data for SoftwareApplication
+      const softwareStructuredData = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Add to Calendar Link Generator",
@@ -173,13 +173,91 @@ export default function AddToCalendarGenerator() {
         }
       }
 
-      const script = document.createElement('script')
-      script.type = 'application/ld+json'
-      script.textContent = JSON.stringify(structuredData)
-      document.head.appendChild(script)
+      // Add structured data for FAQ
+      const faqStructuredData = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I create a Google Calendar link?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Fill out the event details form and click 'Generate Calendar Links & ICS'. The tool will create a Google Calendar link that, when clicked, opens Google Calendar with your event pre-filled. Users can then save it to their calendar with one click."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is an ICS file and how do I use it?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "An ICS file is a standard calendar file format (iCalendar) that works with all major calendar applications including Apple Calendar, Outlook, Google Calendar, and more. When you download an ICS file, you can double-click it to import the event into your default calendar app, or manually import it through your calendar's import function."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do calendar links work on mobile devices?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! Calendar links work on both desktop and mobile devices. On mobile, clicking a calendar link will typically open the device's default calendar app (like Apple Calendar on iOS or Google Calendar on Android) with the event details pre-filled."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I create recurring events?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Absolutely! Use the 'Advanced Options (Recurrence)' section to set up daily, weekly, monthly, or yearly recurring events. You can specify intervals (every 2 weeks), specific days (Mondays and Wednesdays), and end dates for the recurrence series."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is my event data stored on your servers?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No, absolutely not! Everything happens locally in your browser. Your event details, calendar links, and ICS files are generated client-side using JavaScript. Nothing is sent to or stored on our servers, ensuring complete privacy for your events."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What's the difference between all-day and timed events?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "All-day events span entire days without specific times (like birthdays or holidays) and appear at the top of calendar views. Timed events have specific start and end times (like meetings) and appear in time slots. Check the 'All-day event' box for events that don't have specific times."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I add attendees to calendar events?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! Add comma-separated email addresses in the 'Attendees' field. When the calendar link is used or ICS file is imported, the calendar app will typically send invitations to the specified attendees (depending on the user's calendar settings)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do reminders work in all calendar apps?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Reminders are supported by most modern calendar applications when using ICS files. However, calendar links (URLs) have limited reminder support as they depend on the specific calendar service's URL parameters. For best reminder compatibility, use the downloadable ICS file."
+            }
+          }
+        ]
+      }
+
+      const softwareScript = document.createElement('script')
+      softwareScript.type = 'application/ld+json'
+      softwareScript.textContent = JSON.stringify(softwareStructuredData)
+      document.head.appendChild(softwareScript)
+
+      const faqScript = document.createElement('script')
+      faqScript.type = 'application/ld+json'
+      faqScript.textContent = JSON.stringify(faqStructuredData)
+      document.head.appendChild(faqScript)
 
       return () => {
-        if (script.parentNode) script.parentNode.removeChild(script)
+        if (softwareScript.parentNode) softwareScript.parentNode.removeChild(softwareScript)
+        if (faqScript.parentNode) faqScript.parentNode.removeChild(faqScript)
       }
     }
   }, [])
@@ -915,6 +993,87 @@ export default function AddToCalendarGenerator() {
               </p>
             </section>
           )}
+
+          {/* FAQ Section */}
+          <section className="mb-12 overflow-hidden rounded-3xl border border-gray-200/50 bg-white/80 p-8 shadow-2xl shadow-gray-900/5 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/80 dark:shadow-black/20">
+            <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
+              Frequently Asked Questions
+            </h2>
+            
+            <div className="space-y-6">
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  How do I create a Google Calendar link?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>Fill out the event details form above and click "Generate Calendar Links & ICS". The tool will create a Google Calendar link that, when clicked, opens Google Calendar with your event pre-filled. Users can then save it to their calendar with one click.</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  What is an ICS file and how do I use it?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>An ICS file is a standard calendar file format (iCalendar) that works with all major calendar applications including Apple Calendar, Outlook, Google Calendar, and more. When you download an ICS file, you can double-click it to import the event into your default calendar app, or manually import it through your calendar's import function.</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  Do calendar links work on mobile devices?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>Yes! Calendar links work on both desktop and mobile devices. On mobile, clicking a calendar link will typically open the device's default calendar app (like Apple Calendar on iOS or Google Calendar on Android) with the event details pre-filled.</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  Can I create recurring events?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>Absolutely! Use the "Advanced Options (Recurrence)" section to set up daily, weekly, monthly, or yearly recurring events. You can specify intervals (every 2 weeks), specific days (Mondays and Wednesdays), and end dates for the recurrence series.</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  Is my event data stored on your servers?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>No, absolutely not! Everything happens locally in your browser. Your event details, calendar links, and ICS files are generated client-side using JavaScript. Nothing is sent to or stored on our servers, ensuring complete privacy for your events.</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  What's the difference between all-day and timed events?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>All-day events span entire days without specific times (like birthdays or holidays) and appear at the top of calendar views. Timed events have specific start and end times (like meetings) and appear in time slots. Check the "All-day event" box for events that don't have specific times.</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  Can I add attendees to calendar events?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>Yes! Add comma-separated email addresses in the "Attendees" field. When the calendar link is used or ICS file is imported, the calendar app will typically send invitations to the specified attendees (depending on the user's calendar settings).</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="cursor-pointer text-lg font-semibold text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                  Do reminders work in all calendar apps?
+                </summary>
+                <div className="mt-3 text-gray-600 dark:text-gray-400">
+                  <p>Reminders are supported by most modern calendar applications when using ICS files. However, calendar links (URLs) have limited reminder support as they depend on the specific calendar service's URL parameters. For best reminder compatibility, use the downloadable ICS file.</p>
+                </div>
+              </details>
+            </div>
+          </section>
 
           {/* Footer */}
           <footer className="mt-12 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">

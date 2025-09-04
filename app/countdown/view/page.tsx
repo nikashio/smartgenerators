@@ -121,6 +121,11 @@ export default function CountdownView() {
               <span className="text-lg">⏳</span>
               Smart Generators
             </Link>
+            {!eventName && (
+              <h1 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
+                Live Countdown Timer View
+              </h1>
+            )}
           </div>
 
           {/* Theme Toggle */}
@@ -195,7 +200,7 @@ export default function CountdownView() {
             </div>
 
             {/* Create Your Own Link */}
-            <div className="mt-8 text-center">
+            <div className="mt-8 space-y-4 text-center">
               <Link
                 href="/countdown"
                 className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 font-semibold text-white transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/25"
@@ -205,6 +210,21 @@ export default function CountdownView() {
                 </svg>
                 Create Your Own Countdown
               </Link>
+              
+              {/* Additional Tools */}
+              <div className="flex flex-wrap justify-center gap-3 text-sm">
+                <Link href="/discord-timestamp" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                  Discord Timestamp Generator
+                </Link>
+                <span className="text-gray-500">•</span>
+                <Link href="/chat-link-generator" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                  Chat Link Generator
+                </Link>
+                <span className="text-gray-500">•</span>
+                <Link href="/add-to-calendar" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                  Add to Calendar
+                </Link>
+              </div>
             </div>
           </div>
 
