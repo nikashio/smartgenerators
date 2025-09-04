@@ -1,5 +1,8 @@
 import { Metadata } from "next"
 
+// Force dynamic rendering for this route segment to avoid SSG on client pages
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: "Time Zone Meeting Planner – Schedule Across Time Zones | Free Tool",
   description:
