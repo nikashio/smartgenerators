@@ -10,7 +10,7 @@ import { findCityBySlug, formatCityName, getFeaturedCities, getRelatedCities, ge
 import { getTodayTimes, getCurrentMonthTimes, formatTime, formatDate, getMonthName } from "@/lib/sun-times"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { SiteHeader } from "@/components/ui/site-header"
+import ToolHeader from "@/components/ui/tool-header"
 import { CalendarSubscribeButton } from "@/components/ui/calendar-subscribe-button"
 
 interface PageProps {
@@ -103,11 +103,7 @@ export default async function CityPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
-      <SiteHeader 
-        showBackLink={true}
-        backHref="/sunrise-sunset"
-        backText="← Search Cities"
-      />
+      <ToolHeader />
 
       <main className="mx-auto max-w-4xl px-4 py-8">
         {/* City Header */}

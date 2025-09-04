@@ -229,6 +229,16 @@ function ToolsGrid() {
       color: "orange",
       category: "Productivity",
       features: ["Global city support", "Golden hour times", "Calendar export"]
+    },
+    {
+      id: "heic-converter",
+      title: "HEIC to JPG Converter",
+      description: "Convert Apple HEIC photos to JPG format instantly. Privacy-first, works entirely in your browser.",
+      href: "/convert/heic-converter",
+      icon: "🖼️",
+      color: "green",
+      category: "Productivity",
+      features: ["Privacy-first conversion", "Batch processing", "Browser-based"]
     }
   ]
 

@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import ToolHeader from "@/components/ui/tool-header"
 
 /**
  * Page component rendering the article content with consistent site styling
@@ -44,28 +45,9 @@ export default function BlogPost() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
       <div className="mx-auto max-w-4xl px-4 py-12">
         {/* Header */}
-        <header className="relative mb-12 text-center">
-          <div className="mb-6">
-            <Link href="/" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:from-blue-100 hover:to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 dark:text-blue-300">
-              <span className="text-lg">🔗</span>
-              Smart Generators
-            </Link>
-          </div>
+        <ToolHeader />
 
-          {/* Theme Toggle Button */}
-          <div className="absolute top-0 right-0">
-            <button
-              onClick={toggleTheme}
-              className="h-10 w-10 rounded-full border border-gray-200/50 bg-white/80 text-sm backdrop-blur-sm transition-all hover:bg-gray-50 hover:shadow-md dark:border-gray-700/50 dark:bg-gray-900/80 dark:hover:bg-gray-800"
-              aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-              title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-            >
-              <span className="sr-only">{isDarkMode ? "Switch to light mode" : "Switch to dark mode"}</span>
-              <span role="img" aria-hidden="true">{isDarkMode ? "🌙" : "☀️"}</span>
-            </button>
-          </div>
-          
-          <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl text-center">
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
               How to Create WhatsApp
             </span>
@@ -97,7 +79,6 @@ export default function BlogPost() {
               Privacy-first
             </div>
           </div>
-        </header>
 
         <main className="space-y-8">
           {/* TL;DR Card */}

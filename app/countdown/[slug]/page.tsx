@@ -6,6 +6,7 @@ import Link from "next/link"
 import { notFound, useSearchParams } from "next/navigation"
 import { getEventBySlug, type SeasonalEvent } from "@/lib/seasonal-events"
 import { useToast } from "@/hooks/use-toast"
+import ToolHeader from "@/components/ui/tool-header"
 
 // Helper function to get event-specific information
 function getEventInfo(event: SeasonalEvent): string {
@@ -353,27 +354,9 @@ export default function PublicCountdownPage({ params }: Props) {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
       <div className="mx-auto max-w-6xl px-4 py-12">
         {/* Header */}
-        <header className="relative mb-12 text-center">
-          <div className="mb-6">
-            <Link href="/" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 text-sm font-medium text-black dark:text-white transition-colors hover:from-blue-100 hover:to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
-              <span className="text-lg">⏳</span>
-              Smart Generators
-            </Link>
-          </div>
+        <ToolHeader />
 
-          {/* Theme Toggle */}
-          <div className="absolute top-0 right-0">
-            <button
-              onClick={toggleTheme}
-              className="h-10 w-10 rounded-full border border-gray-200/50 bg-white/80 text-sm backdrop-blur-sm transition-all hover:bg-gray-50 hover:shadow-md dark:border-gray-700/50 dark:bg-gray-900/80 dark:hover:bg-gray-800"
-              aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-            >
-              <span className="sr-only">{isDarkMode ? "Switch to light mode" : "Switch to dark mode"}</span>
-              <span role="img" aria-hidden="true">{isDarkMode ? "🌙" : "☀️"}</span>
-            </button>
-          </div>
-          
-          <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+        <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-center">
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Countdown to {event.name}
             </span>
@@ -383,7 +366,6 @@ export default function PublicCountdownPage({ params }: Props) {
           <p className="mx-auto mb-8 max-w-2xl text-2xl text-gray-600 dark:text-gray-300">
             {event.description}
           </p>
-        </header>
 
         <main>
           {/* Countdown Display */}

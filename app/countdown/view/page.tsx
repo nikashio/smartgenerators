@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
+import ToolHeader from "@/components/ui/tool-header"
 
 /**
  * Countdown View Page - Clean countdown display for shareable links
@@ -113,14 +114,11 @@ export default function CountdownView() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950">
+      <ToolHeader />
       <div className="flex min-h-screen items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl">
           {/* Header */}
           <div className="mb-8 text-center">
-            <Link href="/" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:from-blue-100 hover:to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 dark:text-blue-300">
-              <span className="text-lg">⏳</span>
-              Smart Generators
-            </Link>
             {!eventName && (
               <h1 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
                 Live Countdown Timer View
