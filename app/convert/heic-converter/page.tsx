@@ -44,11 +44,26 @@ export default function HEICToJPGConverter() {
   const [targetSizeUnit, setTargetSizeUnit] = useState<'KB' | 'MB'>('KB')
   const [metadataOption, setMetadataOption] = useState<'remove' | 'basic'>('remove')
   const [outputFormat, setOutputFormat] = useState<'jpg' | 'png' | 'pdf'>('jpg')
+  const [pngCompression, setPngCompression] = useState<'off' | 'light' | 'medium' | 'strong'>('off')
   const [worker, setWorker] = useState<Worker | null>(null)
   const [zipSizeEstimate, setZipSizeEstimate] = useState<number>(0)
   const [isCreatingZip, setIsCreatingZip] = useState(false)
   const [isLoadingCodec, setIsLoadingCodec] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Ensure target-size mode is disabled for non-JPG formats
+  useEffect(() => {
+    if (outputFormat !== 'jpg' && useTargetSize) {
+      setUseTargetSize(false)
+    }
+  }, [outputFormat])
+
+  // Reset PNG-specific options when format changes away
+  useEffect(() => {
+    if (outputFormat !== 'png') {
+      setPngCompression('off')
+    }
+  }, [outputFormat])
 
   // Check if a file is HEIC/HEIF by type or extension
   const isHeicFile = (file: File) => {
@@ -549,8 +564,8 @@ export default function HEICToJPGConverter() {
             blob = result.blob
             finalQuality = result.quality
           } else {
-            // Convert canvas to selected format
-            blob = await convertCanvasToFormat(canvas, jpgQuality)
+            // Convert canvas to selected format (explicitly pass outputFormat)
+            blob = await convertCanvasToFormat(canvas, jpgQuality, outputFormat)
           }
 
           // Get file extension based on output format
@@ -769,6 +784,53 @@ export default function HEICToJPGConverter() {
     })
   }
 
+  // Lossy PNG via JPEG re-encode to simulate "quality"
+  const convertCanvasToPNGLossy = async (canvas: HTMLCanvasElement, quality: number): Promise<Blob> => {
+    const jpegBlob: Blob = await new Promise((resolve, reject) => {
+      canvas.toBlob((b) => b ? resolve(b) : reject(new Error('Failed to create JPEG blob for PNG quality')), 'image/jpeg', Math.min(1, Math.max(0.01, quality / 100)))
+    })
+    // Decode JPEG then export as PNG
+    const createFromBlobToPNG = async (blob: Blob): Promise<Blob> => {
+      try {
+        // Prefer createImageBitmap for speed
+        // @ts-ignore
+        if (typeof createImageBitmap === 'function') {
+          // @ts-ignore
+          const bitmap = await createImageBitmap(blob)
+          const c = document.createElement('canvas')
+          c.width = bitmap.width
+          c.height = bitmap.height
+          const cx = c.getContext('2d')!
+          cx.drawImage(bitmap as any, 0, 0)
+          // @ts-ignore
+          if (typeof (bitmap as any).close === 'function') (bitmap as any).close()
+          return await convertCanvasToPNG(c)
+        }
+      } catch {}
+
+      // Fallback via HTMLImageElement
+      await new Promise<void>((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve()
+        img.onerror = () => reject(new Error('Failed to decode intermediate JPEG'))
+        img.src = URL.createObjectURL(blob)
+      })
+      const c = document.createElement('canvas')
+      // TypeScript narrow
+      const imgEl = new Image()
+      imgEl.src = URL.createObjectURL(jpegBlob)
+      await new Promise<void>((resolve) => { imgEl.onload = () => resolve() })
+      c.width = imgEl.naturalWidth
+      c.height = imgEl.naturalHeight
+      const cx = c.getContext('2d')!
+      cx.drawImage(imgEl, 0, 0)
+      URL.revokeObjectURL(imgEl.src)
+      return await convertCanvasToPNG(c)
+    }
+
+    return await createFromBlobToPNG(jpegBlob)
+  }
+
   // Convert canvas to PDF with single image per page
   const convertCanvasToPDF = async (canvas: HTMLCanvasElement): Promise<Blob> => {
     try {
@@ -828,7 +890,12 @@ export default function HEICToJPGConverter() {
     const targetFormat = format || outputFormat
     switch (targetFormat) {
       case 'png':
-        return await convertCanvasToPNG(canvas)
+        // Apply optional compression, then (optionally) lossy PNG quality
+        const baseCanvas = pngCompression !== 'off' ? applyPngCompression(canvas, pngCompression) : canvas
+        if (jpgQuality < 100) {
+          return await convertCanvasToPNGLossy(baseCanvas, jpgQuality)
+        }
+        return await convertCanvasToPNG(baseCanvas)
       case 'pdf':
         return await convertCanvasToPDF(canvas)
       case 'jpg':
@@ -840,6 +907,59 @@ export default function HEICToJPGConverter() {
           }, 'image/jpeg', quality / 100)
         })
     }
+  }
+
+  // Simple bit-depth reduction with optional ordered dithering to improve PNG compression
+  const applyPngCompression = (source: HTMLCanvasElement, level: 'light' | 'medium' | 'strong'): HTMLCanvasElement => {
+    const canvas = document.createElement('canvas')
+    canvas.width = source.width
+    canvas.height = source.height
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(source, 0, 0)
+    const img = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    const data = img.data
+
+    // 4x4 Bayer matrix for ordered dithering
+    const bayer = [
+      [0, 8, 2, 10],
+      [12, 4, 14, 6],
+      [3, 11, 1, 9],
+      [15, 7, 13, 5],
+    ]
+
+    const config = level === 'light'
+      ? { r: 5, g: 6, b: 5, dither: false }
+      : level === 'medium'
+        ? { r: 4, g: 5, b: 4, dither: true }
+        : { r: 3, g: 3, b: 2, dither: true }
+
+    const quantize = (v: number, bits: number, threshold: number) => {
+      const levels = (1 << bits) - 1
+      let value = v
+      if (config.dither) {
+        // scale threshold to 0..255
+        value = Math.max(0, Math.min(255, v + threshold - 8))
+      }
+      const q = Math.round((value / 255) * levels)
+      return Math.round((q / levels) * 255)
+    }
+
+    for (let y = 0; y < img.height; y++) {
+      for (let x = 0; x < img.width; x++) {
+        const i = (y * img.width + x) * 4
+        const thresh = bayer[y % 4][x % 4]
+        const r = data[i]
+        const g = data[i + 1]
+        const b = data[i + 2]
+        data[i] = quantize(r, config.r, thresh)
+        data[i + 1] = quantize(g, config.g, thresh)
+        data[i + 2] = quantize(b, config.b, thresh)
+        // alpha unchanged
+      }
+    }
+
+    ctx.putImageData(img, 0, 0)
+    return canvas
   }
 
   // Initialize Web Worker
@@ -865,11 +985,17 @@ export default function HEICToJPGConverter() {
 
     if (type === 'file_converted') {
       const originalName = data.fileName.replace(/\.(heic|heif|png|jpg|jpeg)$/i, '')
-      const downloadUrl = URL.createObjectURL(new Blob([data.convertedBlob]))
+          const mime = (data.outputFormat || 'jpg') === 'pdf'
+            ? 'application/pdf'
+            : (data.outputFormat || 'jpg') === 'png'
+              ? 'image/png'
+              : 'image/jpeg'
+          const typedBlob = new Blob([data.convertedBlob], { type: mime })
+          const downloadUrl = URL.createObjectURL(typedBlob)
 
       const newConvertedFile = {
         originalName,
-        convertedBlob: new Blob([data.convertedBlob]),
+        convertedBlob: typedBlob,
         downloadUrl,
         thumbUrl: data.thumbUrl,
         finalQuality: data.finalQuality,
@@ -975,13 +1101,15 @@ export default function HEICToJPGConverter() {
           data: {
             fileData,
             fileName: file.name,
+            originalType: file.type || '',
             metadata,
             useTargetSize,
             targetSize,
             targetSizeUnit,
             jpgQuality,
             metadataOption,
-            outputFormat
+            outputFormat,
+            pngCompression
           }
         })
       } catch (error) {
@@ -997,16 +1125,22 @@ export default function HEICToJPGConverter() {
   // Handle a single HEIC fallback conversion on the main thread (from worker request)
   const convertHeicFallbackOnMainThread = async (payload: any) => {
     try {
-      // Rebuild File from ArrayBuffer
+      // Rebuild File from ArrayBuffer with original MIME type if available
       const arrayBuffer: ArrayBuffer = payload.fileData
       const u8 = new Uint8Array(arrayBuffer)
-      const file = new File([u8], payload.fileName, { type: 'image/heic' })
+      const originalType: string = payload.originalType || ''
+      const file = new File([u8], payload.fileName, { type: originalType })
 
       // Ensure codecs are present
       await loadCodecsForMainThread()
 
-      // Build canvas using existing HEIC path
-      const canvas = await convertHeicToCanvas(file, payload.metadata)
+      // Build canvas using appropriate path based on original type/extension
+      const lowerName = (payload.fileName || '').toLowerCase()
+      const isHeic = (originalType && (originalType.includes('heic') || originalType.includes('heif'))) ||
+        lowerName.endsWith('.heic') || lowerName.endsWith('.heif')
+      const canvas = isHeic
+        ? await convertHeicToCanvas(file, payload.metadata)
+        : await convertImageToCanvas(file, payload.metadata)
 
       // Choose quality based on target setting and format
       let blob: Blob
@@ -1186,12 +1320,12 @@ export default function HEICToJPGConverter() {
         <div className="mb-8 text-center">
           <h1 className="mb-3 text-3xl font-bold text-gray-900 dark:text-white">
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              HEIC to JPG
+              HEIC Converter
             </span>{" "}
-            Converter (No Uploads)
+            (JPG/PNG/PDF, No Uploads)
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Convert HEIC, HEIF, JPG, and PNG images instantly. Works entirely in your browser with privacy-first processing.
+            Convert HEIC and HEIF images to JPG, PNG, or PDF — fast, private, and entirely in your browser.
           </p>
 
           {/* Privacy Copy */}
@@ -1434,10 +1568,9 @@ export default function HEICToJPGConverter() {
                     <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <label className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Output Format
-                </label>
+                <label className="text-sm font-semibold text-gray-900 dark:text-white">Output Format</label>
               </div>
+              <p className="-mt-2 text-xs text-gray-600 dark:text-gray-400">JPG: smaller, lossy • PNG: lossless (bigger) • PDF: one image per page</p>
 
               <div className="flex gap-3">
                 {[
@@ -1470,7 +1603,7 @@ export default function HEICToJPGConverter() {
         )}
 
         {/* Quality Slider (only for JPG) */}
-        {selectedFiles.length > 0 && outputFormat === 'jpg' && (
+        {selectedFiles.length > 0 && (outputFormat === 'jpg' || outputFormat === 'png') && (
           <div className="mb-6 rounded-2xl border border-gray-200/70 bg-white/90 p-6 shadow-sm backdrop-blur-sm dark:border-gray-700/60 dark:bg-gray-900/90">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -1478,9 +1611,14 @@ export default function HEICToJPGConverter() {
                   <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 flex items-center justify-center">
                     <svg className="h-4 w-4 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor"><path d="M2 10a8 8 0 1116 0 8 8 0 01-16 0zm8-5a1 1 0 00-1 1v3.382l-1.447.724a1 1 0 10.894 1.788l2-1A1 1 0 0011 10V6a1 1 0 00-1-1z"/></svg>
                   </div>
-                  <label htmlFor="quality-slider" className="text-sm font-semibold text-gray-900 dark:text-white">
-                    JPG Quality
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="quality-slider" className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {outputFormat === 'png' ? 'PNG Quality (lossy)' : 'JPG Quality'}
+                    </label>
+                    {outputFormat === 'png' && jpgQuality < 100 && (
+                      <span className="ml-1 rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">Transparency removed</span>
+                    )}
+                  </div>
                 </div>
                 <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                   {jpgQuality}%
@@ -1495,7 +1633,7 @@ export default function HEICToJPGConverter() {
                   max="100"
                   value={jpgQuality}
                   onChange={(e) => setJpgQuality(parseInt(e.target.value))}
-                  disabled={useTargetSize}
+                  disabled={outputFormat === 'jpg' ? useTargetSize : false}
                   className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider ${useTargetSize ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{
                     background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${jpgQuality}%, #e5e7eb ${jpgQuality}%, #e5e7eb 100%)`
@@ -1545,7 +1683,46 @@ export default function HEICToJPGConverter() {
                 </>
               )}
 
-              {/* Target Size Toggle */}
+              {/* PNG Compression options */}
+              {selectedFiles.length > 0 && outputFormat === 'png' && (
+                <div className="border-t border-gray-200/70 pt-4 dark:border-gray-700/60">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30 flex items-center justify-center">
+                        <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 00-3 3v6a3 3 0 003 3h6a3 3 0 003-3V7a3 3 0 00-3-3H7z"/></svg>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">PNG Compression</span>
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Reduces colors for smaller PNGs</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {[
+                      { key: 'off', label: 'Off' },
+                      { key: 'light', label: 'Light' },
+                      { key: 'medium', label: 'Medium' },
+                      { key: 'strong', label: 'Strong' },
+                    ].map(opt => (
+                      <label key={opt.key} className="flex items-center gap-2 p-2 rounded-lg border border-gray-200/60 bg-white/60 dark:border-gray-700/60 dark:bg-gray-900/60 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="pngCompression"
+                          value={opt.key}
+                          checked={pngCompression === (opt.key as any)}
+                          onChange={(e) => setPngCompression(e.target.value as any)}
+                          className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                    Tip: Use Medium/Strong for graphics and UI; Light for photos.
+                  </div>
+                </div>
+              )}
+
+              {/* Target Size Toggle (JPG only) */}
+              {outputFormat === 'jpg' && (
               <div className="border-t border-gray-200/70 pt-4 dark:border-gray-700/60">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -1561,10 +1738,11 @@ export default function HEICToJPGConverter() {
                         }`}
                       />
                     </button>
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">
-                      Target size
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-900 dark:text-white">Target size</label>
+                    </div>
                   </div>
+                  <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">JPG only — finds a quality that approximates your target size.</p>
                   {useTargetSize && (
                     <div className="flex items-center gap-2">
                       <input
@@ -1600,15 +1778,15 @@ export default function HEICToJPGConverter() {
                   </div>
                 )}
               </div>
+              )}
 
               {/* Metadata Options */}
               <div className="border-t border-gray-200/70 pt-4 dark:border-gray-700/60">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">
-                      Metadata Handling
-                    </label>
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">Metadata Handling</label>
                   </div>
+                  <p className="-mt-1 text-xs text-gray-600 dark:text-gray-400">Remove: strip EXIF & GPS for privacy • Keep basic: preserve date taken & orientation</p>
 
                   <div className="flex gap-3">
                     <label className="flex-1 flex items-center gap-3 p-3 rounded-lg border border-gray-200/60 bg-white/60 transition-all hover:border-gray-300/60 dark:border-gray-700/60 dark:bg-gray-900/60 cursor-pointer">
@@ -1873,7 +2051,7 @@ export default function HEICToJPGConverter() {
 
         {/* Feedback Section */}
         <div className="mt-12">
-          <FeedbackForm toolName="HEIC to JPG Converter" defaultCollapsed={true} />
+          <FeedbackForm toolName="HEIC Converter" defaultCollapsed={true} />
         </div>
       </main>
     </div>

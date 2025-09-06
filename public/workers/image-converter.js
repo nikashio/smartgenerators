@@ -111,56 +111,28 @@ function applyOrientationCorrection(canvas, orientation) {
   return orientedCanvas;
 }
 
-// Convert regular image to canvas with orientation correction
-async function convertImageToCanvas(fileData, metadata) {
-  return new Promise((resolve, reject) => {
-    const blob = new Blob([fileData]);
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
+// Convert regular image to canvas with orientation correction (worker-safe)
+async function convertImageToCanvas(fileData, metadata, mimeType) {
+  if (typeof createImageBitmap !== 'function') {
+    throw new Error('NO_IMAGE_DECODE_IN_WORKER');
+  }
+  const blob = new Blob([fileData], { type: mimeType || 'image/*' });
+  const bitmap = await createImageBitmap(blob);
 
-    img.onload = () => {
-      URL.revokeObjectURL(url);
+  const srcW = bitmap.width;
+  const srcH = bitmap.height;
 
-      let canvas = new OffscreenCanvas(img.width, img.height);
-      let ctx = canvas.getContext('2d');
+  const needsRotation = metadata && [5, 6, 7, 8].includes(metadata.orientation);
+  const canvas = new OffscreenCanvas(needsRotation ? srcH : srcW, needsRotation ? srcW : srcH);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Failed to get canvas context');
 
-      if (!ctx) {
-        reject(new Error('Failed to get canvas context'));
-        return;
-      }
-
-      // Apply orientation correction if needed
-      if (metadata?.orientation && metadata.orientation !== 1) {
-        const needsRotation = [5, 6, 7, 8].includes(metadata.orientation);
-        canvas = new OffscreenCanvas(
-          needsRotation ? img.height : img.width,
-          needsRotation ? img.width : img.height
-        );
-        ctx = canvas.getContext('2d');
-
-        if (!ctx) {
-          reject(new Error('Failed to get oriented canvas context'));
-          return;
-        }
-
-        ctx.save();
-        applyOrientationCorrectionToContext(ctx, metadata.orientation, img.width, img.height);
-        ctx.drawImage(img, 0, 0, img.width, img.height);
-        ctx.restore();
-      } else {
-        ctx.drawImage(img, 0, 0);
-      }
-
-      resolve(canvas);
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Failed to load image'));
-    };
-
-    img.src = url;
-  });
+  ctx.save();
+  applyOrientationCorrectionToContext(ctx, (metadata && metadata.orientation) || 1, srcW, srcH);
+  ctx.drawImage(bitmap, 0, 0, srcW, srcH);
+  ctx.restore();
+  if (typeof bitmap.close === 'function') bitmap.close();
+  return canvas;
 }
 
 // Apply orientation correction to 2D context (for regular images)
@@ -236,7 +208,28 @@ self.onmessage = async function(e) {
   try {
     switch (action) {
       case 'convert_file': {
-        const { fileData, fileName, metadata, useTargetSize, targetSize, targetSizeUnit, jpgQuality, metadataOption, outputFormat } = data;
+        const { fileData, fileName, originalType, metadata, useTargetSize, targetSize, targetSizeUnit, jpgQuality, metadataOption, outputFormat } = data;
+
+        // Early fallback for PDF output (handled on main thread)
+        if (outputFormat === 'pdf') {
+          const transferable = fileData instanceof ArrayBuffer ? fileData : fileData.buffer;
+          self.postMessage({
+            type: 'heic_fallback_request',
+            data: {
+              fileName,
+              fileData: transferable,
+              originalType,
+              metadata,
+              useTargetSize,
+              targetSize,
+              targetSizeUnit,
+              jpgQuality,
+              metadataOption,
+              outputFormat
+            }
+          }, [transferable]);
+          break;
+        }
 
         let canvas;
 
@@ -257,6 +250,7 @@ self.onmessage = async function(e) {
                 data: {
                   fileName,
                   fileData: transferable,
+                  originalType,
                   metadata,
                   useTargetSize,
                   targetSize,
@@ -270,7 +264,27 @@ self.onmessage = async function(e) {
             throw err;
           }
         } else {
-          canvas = await convertImageToCanvas(fileData, metadata);
+          try {
+            canvas = await convertImageToCanvas(fileData, metadata, originalType);
+          } catch (err) {
+            const transferable = fileData instanceof ArrayBuffer ? fileData : fileData.buffer;
+            self.postMessage({
+              type: 'heic_fallback_request',
+              data: {
+                fileName,
+                fileData: transferable,
+                originalType,
+                metadata,
+                useTargetSize,
+                targetSize,
+                targetSizeUnit,
+                jpgQuality,
+                metadataOption,
+                outputFormat
+              }
+            }, [transferable]);
+            break;
+          }
         }
 
         let blob;
@@ -284,6 +298,7 @@ self.onmessage = async function(e) {
             data: {
               fileName,
               fileData: transferable,
+              originalType,
               metadata,
               useTargetSize,
               targetSize,
@@ -302,7 +317,7 @@ self.onmessage = async function(e) {
           blob = result.blob;
           finalQuality = result.quality;
         } else {
-          blob = await convertCanvasToFormat(canvas, jpgQuality, outputFormat);
+          blob = await convertCanvasToFormat(canvas, jpgQuality, outputFormat, data.pngCompression || 'off');
         }
 
         // Create thumbnail
@@ -356,6 +371,24 @@ async function convertCanvasToPNG(canvas) {
   return await canvas.convertToBlob({ type: 'image/png' });
 }
 
+// Lossy PNG via JPEG intermediate to approximate a quality slider
+async function convertCanvasToPNGWithQuality(canvas, quality) {
+  // Create JPEG first
+  const jpegBlob = await canvas.convertToBlob({ type: 'image/jpeg', quality: Math.min(1, Math.max(0.01, quality / 100)) });
+  // Decode JPEG
+  if (typeof createImageBitmap !== 'function') {
+    // No safe decode path in worker; fall back to main thread
+    throw new Error('NO_IMAGE_DECODE_IN_WORKER');
+  }
+  const bitmap = await createImageBitmap(jpegBlob);
+  const c = new OffscreenCanvas(bitmap.width, bitmap.height);
+  const cx = c.getContext('2d');
+  if (!cx) throw new Error('Failed to get canvas context');
+  cx.drawImage(bitmap, 0, 0);
+  if (typeof bitmap.close === 'function') bitmap.close();
+  return await c.convertToBlob({ type: 'image/png' });
+}
+
 // Convert canvas to PDF (simplified version for worker)
 async function convertCanvasToPDF(canvas) {
   try {
@@ -369,10 +402,38 @@ async function convertCanvasToPDF(canvas) {
 }
 
 // Convert canvas to blob based on format
-async function convertCanvasToFormat(canvas, quality, format) {
+function applyPngCompressionToCanvas(srcCanvas, level) {
+  const width = srcCanvas.width, height = srcCanvas.height;
+  const canvas = new OffscreenCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return srcCanvas;
+  ctx.drawImage(srcCanvas, 0, 0);
+  const img = ctx.getImageData(0, 0, width, height);
+  const data = img.data;
+  const bayer = [ [0,8,2,10], [12,4,14,6], [3,11,1,9], [15,7,13,5] ];
+  const cfg = level === 'light' ? {r:5,g:6,b:5,d:true} : level === 'medium' ? {r:4,g:5,b:4,d:true} : {r:3,g:3,b:2,d:true};
+  const quant = (v,bits,th) => { const levels=(1<<bits)-1; const vv = Math.max(0,Math.min(255, v + (cfg.d? th-8:0))); const q=Math.round((vv/255)*levels); return Math.round((q/levels)*255); };
+  for (let y=0;y<height;y++) {
+    for (let x=0;x<width;x++) {
+      const i=(y*width+x)*4; const th=bayer[y%4][x%4];
+      data[i]   = quant(data[i],   cfg.r, th);
+      data[i+1] = quant(data[i+1], cfg.g, th);
+      data[i+2] = quant(data[i+2], cfg.b, th);
+    }
+  }
+  ctx.putImageData(img,0,0);
+  return canvas;
+}
+
+async function convertCanvasToFormat(canvas, quality, format, pngCompression) {
   switch (format) {
     case 'png':
-      return await convertCanvasToPNG(canvas);
+      // Apply optional compression first, then optional lossy re-encode if quality < 100
+      const baseCanvas = (pngCompression && pngCompression !== 'off') ? applyPngCompressionToCanvas(canvas, pngCompression) : canvas;
+      if (quality < 100) {
+        try { return await convertCanvasToPNGWithQuality(baseCanvas, quality); } catch { return await convertCanvasToPNG(baseCanvas); }
+      }
+      return await convertCanvasToPNG(baseCanvas);
     case 'pdf':
       return await convertCanvasToPDF(canvas);
     case 'jpg':

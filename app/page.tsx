@@ -232,13 +232,33 @@ function ToolsGrid() {
     },
     {
       id: "heic-converter",
-      title: "HEIC to JPG Converter",
-      description: "Convert Apple HEIC photos to JPG format instantly. Privacy-first, works entirely in your browser.",
+      title: "HEIC Converter (JPG/PNG/PDF)",
+      description: "Convert HEIC/HEIF to JPG, PNG, or PDF — private, no uploads.",
       href: "/convert/heic-converter",
       icon: "🖼️",
       color: "green",
       category: "Productivity",
       features: ["Privacy-first conversion", "Batch processing", "Browser-based"]
+    },
+    {
+      id: "image-merge",
+      title: "Image Merge Tool",
+      description: "Merge two images horizontally or vertically with alignment, auto-scale, and fine-tuning.",
+      href: "/image-merge",
+      icon: "🧩",
+      color: "purple",
+      category: "Productivity",
+      features: ["Horizontal/vertical merge", "Auto-scale options", "Drag-and-drop uploads"]
+    },
+    {
+      id: "image-grayscale",
+      title: "Image to Black & White",
+      description: "Convert images to clean grayscale entirely in your browser.",
+      href: "/image-grayscale",
+      icon: "🎨",
+      color: "indigo",
+      category: "Productivity",
+      features: ["Privacy-first (local)", "PNG/JPG output", "Drag-and-drop uploads"]
     }
   ]
 

@@ -1433,43 +1433,119 @@ export default function HEICToJPGConverter() {
         {/* Output Format Selection */}
         {selectedFiles.length > 0 && (
           <div className="mb-6 rounded-2xl border border-gray-200/70 bg-white/90 p-6 shadow-sm backdrop-blur-sm dark:border-gray-700/60 dark:bg-gray-900/90">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 flex items-center justify-center">
-                  <svg className="h-4 w-4 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                  <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <label className="text-sm font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                   Output Format
-                </label>
+                </h3>
               </div>
 
-              <div className="flex gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { value: 'jpg', label: 'JPG', description: 'Compressed, web-friendly', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-                  { value: 'png', label: 'PNG', description: 'Lossless, high quality', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-                  { value: 'pdf', label: 'PDF', description: 'Single image per page', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }
-                ].map((format) => (
-                  <label key={format.value} className="flex-1 flex items-center gap-3 p-3 rounded-lg border border-gray-200/60 bg-white/60 transition-all hover:border-gray-300/60 dark:border-gray-700/60 dark:bg-gray-900/60 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="outputFormat"
-                      value={format.value}
-                      checked={outputFormat === format.value}
-                      onChange={(e) => setOutputFormat(e.target.value as 'jpg' | 'png' | 'pdf')}
-                      className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500 dark:focus:ring-purple-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  { 
+                    value: 'jpg', 
+                    label: 'JPG', 
+                    description: 'Compressed, web-friendly',
+                    icon: (
+                      <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                      </svg>
+                    ),
+                    gradient: 'from-emerald-500 to-green-600',
+                    bgGradient: 'from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20',
+                    borderColor: 'border-emerald-200 dark:border-emerald-700',
+                    selectedBorder: 'border-emerald-500 dark:border-emerald-400',
+                    textColor: 'text-emerald-700 dark:text-emerald-300'
+                  },
+                  { 
+                    value: 'png', 
+                    label: 'PNG', 
+                    description: 'Lossless, high quality',
+                    icon: (
+                      <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                      </svg>
+                    ),
+                    gradient: 'from-blue-500 to-indigo-600',
+                    bgGradient: 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20',
+                    borderColor: 'border-blue-200 dark:border-blue-700',
+                    selectedBorder: 'border-blue-500 dark:border-blue-400',
+                    textColor: 'text-blue-700 dark:text-blue-300'
+                  },
+                  { 
+                    value: 'pdf', 
+                    label: 'PDF', 
+                    description: 'Single image per page',
+                    icon: (
+                      <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                      </svg>
+                    ),
+                    gradient: 'from-red-500 to-rose-600',
+                    bgGradient: 'from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20',
+                    borderColor: 'border-red-200 dark:border-red-700',
+                    selectedBorder: 'border-red-500 dark:border-red-400',
+                    textColor: 'text-red-700 dark:text-red-300'
+                  }
+                ].map((format) => {
+                  const isSelected = outputFormat === format.value
+                  return (
+                    <label 
+                      key={format.value} 
+                      className={`
+                        relative flex flex-col items-center p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer
+                        bg-gradient-to-br ${format.bgGradient}
+                        ${isSelected 
+                          ? `${format.selectedBorder} shadow-lg scale-105` 
+                          : `${format.borderColor} hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md hover:scale-102`
+                        }
+                      `}
+                    >
+                      {/* Selection indicator */}
+                      {isSelected && (
+                        <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                          <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+
+                      <input
+                        type="radio"
+                        name="outputFormat"
+                        value={format.value}
+                        checked={isSelected}
+                        onChange={(e) => setOutputFormat(e.target.value as 'jpg' | 'png' | 'pdf')}
+                        className="sr-only"
+                      />
+
+                      {/* Icon */}
+                      <div className={`h-12 w-12 rounded-xl bg-gradient-to-r ${format.gradient} flex items-center justify-center text-white shadow-lg mb-3`}>
+                        {format.icon}
+                      </div>
+
+                      {/* Format name */}
+                      <div className={`text-lg font-bold mb-1 ${format.textColor}`}>
                         {format.label}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
+
+                      {/* Description */}
+                      <div className="text-sm text-gray-600 dark:text-gray-400 text-center leading-relaxed">
                         {format.description}
                       </div>
-                    </div>
-                  </label>
-                ))}
+
+                      {/* Selection ring effect */}
+                      {isSelected && (
+                        <div className="absolute inset-0 rounded-2xl ring-4 ring-purple-500/20 dark:ring-purple-400/20" />
+                      )}
+                    </label>
+                  )
+                })}
               </div>
             </div>
           </div>

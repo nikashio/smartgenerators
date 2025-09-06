@@ -1,9 +1,9 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "HEIC to JPG Converter (No Uploads) – Free Online Image Converter | Privacy First",
+  title: "HEIC Converter – JPG/PNG/PDF (No Uploads) | Privacy First",
   description:
-    "Free HEIC to JPG converter (no uploads) – convert Apple HEIC photos to JPG format instantly. Privacy-first, works entirely in your browser. Convert multiple files at once.",
+    "Convert HEIC/HEIF images to JPG, PNG, or PDF — no uploads. Fast, private, and browser-based with batch support.",
   keywords: [
     "image format converter", "HEIC to JPG converter", "HEIC converter", "Apple HEIC to JPG",
     "convert HEIC", "HEIC to JPEG", "iPhone photo converter", "HEIC format converter",
@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "HEIC to JPG Converter (No Uploads) – Free Online Image Converter | Privacy First",
+    title: "HEIC Converter – JPG/PNG/PDF (No Uploads) | Privacy First",
     description:
-      "Free HEIC to JPG converter (no uploads) – convert Apple HEIC photos to JPG format instantly. Privacy-first, works entirely in your browser. Convert multiple files at once.",
+      "Convert HEIC/HEIF to JPG, PNG, or PDF — private, fast, and entirely in your browser.",
     url: "https://smartgenerators.dev/convert/heic-converter",
     siteName: "Smart Generators",
     images: [
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HEIC to JPG Converter (No Uploads) – Free Online Image Converter | Privacy First",
+    title: "HEIC Converter – JPG/PNG/PDF (No Uploads)",
     description:
-      "Free HEIC to JPG converter (no uploads) – convert Apple HEIC photos to JPG format instantly. Privacy-first, works entirely in your browser.",
+      "Convert HEIC/HEIF to JPG, PNG, or PDF in your browser. No uploads.",
     images: ["https://smartgenerators.dev/og-heic-converter.png"],
   },
   alternates: {
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function HEICToJPGLayout({
+export default function HEICConverterLayout({
   children,
 }: {
   children: React.ReactNode
@@ -67,10 +67,10 @@ export default function HEICToJPGLayout({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": "HEIC to JPG Converter",
+            "name": "HEIC Converter (JPG/PNG/PDF)",
             "applicationCategory": "WebApplication",
             "operatingSystem": "Any",
-            "description": "Free HEIC to JPG converter (no uploads) – convert Apple HEIC photos to JPG format instantly. Privacy-first, works entirely in your browser.",
+            "description": "Convert HEIC/HEIF to JPG, PNG, or PDF — privacy-first, no uploads, runs entirely in your browser.",
             "url": "https://smartgenerators.dev/convert/heic-converter",
             "provider": {
               "@type": "Organization",
@@ -83,7 +83,7 @@ export default function HEICToJPGLayout({
               "priceCurrency": "USD"
             },
             "featureList": [
-              "Convert HEIC to JPG",
+              "Convert HEIC to JPG/PNG/PDF",
               "Batch processing",
               "Privacy-first (no uploads)",
               "Browser-based processing",
@@ -107,7 +107,7 @@ export default function HEICToJPGLayout({
                 "name": "Does this tool work offline?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes! The HEIC to JPG converter works entirely offline once loaded. All processing happens in your browser, so your files never leave your device."
+                  "text": "Yes! The HEIC converter works entirely offline once loaded. All processing happens in your browser, so your files never leave your device."
                 }
               },
               {
@@ -120,10 +120,10 @@ export default function HEICToJPGLayout({
               },
               {
                 "@type": "Question",
-                "name": "How do I use the HEIC to JPG converter?",
+                "name": "How do I use the HEIC converter?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Simply drag and drop your HEIC/HEIF/JPG/PNG files onto the converter, or click 'Choose Files' to select them. Configure quality settings and metadata options as needed, then click 'Convert' to process your images."
+                  "text": "Simply drag and drop your HEIC/HEIF/JPG/PNG files onto the converter, or click 'Choose Files' to select them. Choose JPG, PNG, or PDF, adjust settings if needed, then click 'Convert'."
                 }
               }
             ]
