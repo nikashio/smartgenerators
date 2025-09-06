@@ -147,6 +147,13 @@ export default function ImageGrayscaleTool() {
       <ToolHeader />
 
       <div className="mx-auto max-w-5xl px-4">
+        <nav aria-label="Breadcrumb" className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+          <a href="/" className="hover:underline">Home</a>
+          <span className="mx-1">/</span>
+          <a href="/tools" className="hover:underline">Tools</a>
+          <span className="mx-1">/</span>
+          <span aria-current="page">Image to Black & White</span>
+        </nav>
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-3 dark:from-gray-800 dark:to-blue-900/30">
             <span className="text-2xl">🎨</span>
@@ -217,7 +224,7 @@ export default function ImageGrayscaleTool() {
                   <div className="flex min-h-[220px] items-center justify-center overflow-hidden rounded-md border border-dashed border-gray-300 bg-gray-50 p-2 dark:border-gray-700 dark:bg-gray-950">
                     {src ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img ref={imgRef as any} src={src} alt="Original image" className="max-h-[360px] w-auto max-w-full object-contain" />
+                      <img ref={imgRef as any} src={src} alt="Original image" loading="lazy" decoding="async" className="max-h-[360px] w-auto max-w-full object-contain" />
                     ) : (
                       <div className="text-sm text-gray-500">Upload an image to preview</div>
                     )}
@@ -228,7 +235,7 @@ export default function ImageGrayscaleTool() {
                   <div className="flex min-h-[220px] items-center justify-center overflow-hidden rounded-md border border-dashed border-gray-300 bg-gray-50 p-2 dark:border-gray-700 dark:bg-gray-950">
                     {resultUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={resultUrl} alt="Grayscale result" className="max-h-[360px] w-auto max-w-full object-contain" />
+                      <img src={resultUrl} alt="Grayscale result" loading="lazy" decoding="async" className="max-h-[360px] w-auto max-w-full object-contain" />
                     ) : (
                       <div className="text-sm text-gray-500">Converted image will appear here</div>
                     )}
@@ -249,6 +256,28 @@ export default function ImageGrayscaleTool() {
             </div>
           </div>
         </div>
+
+        <section className="mt-8 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <h2 className="mb-3 text-base font-semibold">FAQs</h2>
+          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+            <details>
+              <summary className="cursor-pointer font-medium">Is this grayscale converter private?</summary>
+              <div className="mt-1">Yes. All processing happens locally in your browser — your images never leave your device.</div>
+            </details>
+            <details>
+              <summary className="cursor-pointer font-medium">What formats are supported?</summary>
+              <div className="mt-1">Upload PNG, JPG/JPEG, or WebP. Export to PNG (lossless) or JPG (smaller, adjustable quality).</div>
+            </details>
+            <details>
+              <summary className="cursor-pointer font-medium">Will my image quality change?</summary>
+              <div className="mt-1">PNG preserves original quality. JPG lets you choose a quality level (50–100%) for smaller files.</div>
+            </details>
+            <details>
+              <summary className="cursor-pointer font-medium">Can I get pure black and white (no gray)?</summary>
+              <div className="mt-1">This tool uses perceptual grayscale. A threshold option for true black/white is planned.</div>
+            </details>
+          </div>
+        </section>
 
         <div className="mt-10">
           <FeedbackForm toolName="Image to Black & White" />

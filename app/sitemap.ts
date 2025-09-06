@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getAllEventSlugs } from '@/lib/seasonal-events'
 import { getFeaturedCities, getTopCitiesForSitemap } from '@/lib/cities'
+import { allTools } from '@/lib/tools'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://smartgenerators.dev'
@@ -12,6 +13,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 1,
+    },
+    {
+      url: `${baseUrl}/tools`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/countdown`,
@@ -85,7 +92,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/convert/heic-to-jpg`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    },
   ]
+
+  // All tool landing pages from central registry
+  const toolPages = allTools.map((tool) => ({
+    url: `${baseUrl}${tool.href}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8 as const,
+  }))
 
   // Dynamic countdown pages
   const countdownPages = getAllEventSlugs().map((slug) => ({
@@ -113,5 +134,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     }))
 
-  return [...staticPages, ...countdownPages, ...featuredSunriseSunsetPages, ...topCitiesPages]
+  // Merge and de-duplicate by URL
+  const merged = [
+    ...staticPages,
+    ...toolPages,
+    ...countdownPages,
+    ...featuredSunriseSunsetPages,
+    ...topCitiesPages,
+  ]
+
+  const seen = new Set<string>()
+  const deduped: MetadataRoute.Sitemap = []
+  for (const item of merged) {
+    if (!seen.has(item.url)) {
+      seen.add(item.url)
+      deduped.push(item)
+    }
+  }
+
+  return deduped
 }

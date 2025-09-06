@@ -53,6 +53,9 @@ export const metadata: Metadata = {
       "View shared meeting times across multiple time zones.",
     images: ["https://smartgenerators.dev/placeholder.jpg"],
   },
+  alternates: {
+    canonical: "https://smartgenerators.dev/time-zone-planner/view",
+  },
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
