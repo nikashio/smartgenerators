@@ -90,4 +90,14 @@ export const allTools: Tool[] = [
     category: "Productivity",
     features: ["Privacy-first (local)", "PNG/JPG output", "Drag-and-drop uploads"],
   },
+  {
+    id: "image-merge",
+    title: "Merge Two Images (Side-by-Side)",
+    description: "Upload two images, drag to crop and align, then export side-by-side.",
+    href: "/image-merge",
+    icon: "🧩",
+    color: "blue",
+    category: "Productivity",
+    features: ["Drag-to-crop", "PNG/JPG output", "Local processing"],
+  },
 ]

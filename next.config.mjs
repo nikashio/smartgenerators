@@ -10,20 +10,18 @@ const nextConfig = {
     unoptimized: true,
   },
   webpack: (config, { isServer }) => {
-    // Handle WASM files for heic-decode
-    config.experiments = {
-      ...config.experiments,
-      asyncWebAssembly: true,
-    }
-    
-    // Ensure WASM files are properly handled
-    config.module.rules.push({
-      test: /\.wasm$/,
-      type: 'webassembly/async',
-    })
-
-    // Copy WASM files to public directory during build
+    // Limit WASM handling to client builds to avoid conflicts with Edge runtime (e.g. next/og)
     if (!isServer) {
+      config.experiments = {
+        ...config.experiments,
+        asyncWebAssembly: true,
+      }
+
+      config.module.rules.push({
+        test: /\.wasm$/,
+        type: 'webassembly/async',
+      })
+
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,

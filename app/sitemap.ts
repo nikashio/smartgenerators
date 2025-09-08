@@ -2,9 +2,19 @@ import { MetadataRoute } from 'next'
 import { getAllEventSlugs } from '@/lib/seasonal-events'
 import { getFeaturedCities, getTopCitiesForSitemap } from '@/lib/cities'
 import { allTools } from '@/lib/tools'
+import fs from 'fs'
+import path from 'path'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://smartgenerators.dev'
+  
+  // Discover all static app routes that have a page.tsx and no dynamic segments
+  const discoveredStaticPages = getAllStaticAppPages().map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7 as const,
+  }))
   
   // Static pages
   const staticPages = [
@@ -137,6 +147,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Merge and de-duplicate by URL
   const merged = [
     ...staticPages,
+    // auto-discovered static pages (deduped later)
+    ...discoveredStaticPages,
     ...toolPages,
     ...countdownPages,
     ...featuredSunriseSunsetPages,
@@ -153,4 +165,43 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   return deduped
+}
+
+// Recursively scan the app/ directory for static page routes (no dynamic segments)
+function getAllStaticAppPages(): string[] {
+  const appDir = path.join(process.cwd(), 'app')
+  const routes: string[] = []
+
+  function walk(dir: string, routeBase: string) {
+    // Skip api routes
+    if (routeBase.startsWith('/api')) return
+
+    const entries = fs.readdirSync(dir, { withFileTypes: true })
+
+    // If this directory contains a page.tsx, record the route
+    if (entries.some((e) => e.isFile() && e.name === 'page.tsx')) {
+      routes.push(routeBase === '' ? '/' : routeBase)
+    }
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+
+      const name = entry.name
+
+      // Skip route groups and dynamic segments
+      if (name.startsWith('(') && name.endsWith(')')) continue
+      if (name.includes('[') && name.includes(']')) continue
+      if (name === 'api') continue
+
+      const nextDir = path.join(dir, name)
+      const nextRoute = routeBase + '/' + name
+      walk(nextDir, nextRoute)
+    }
+  }
+
+  walk(appDir, '')
+
+  // Normalize and sort for stability
+  const normalized = Array.from(new Set(routes.map((r) => r.replace(/\\+/g, '/'))))
+  return normalized.sort((a, b) => a.localeCompare(b))
 }
